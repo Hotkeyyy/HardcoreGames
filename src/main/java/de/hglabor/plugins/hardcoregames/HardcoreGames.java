@@ -19,6 +19,7 @@ import de.hglabor.plugins.hardcoregames.queue.ServerPingListener;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.kitapi.KitApi;
+import de.hglabor.plugins.kitapi.command.KitSettingsCommand;
 import de.hglabor.plugins.kitapi.kit.events.KitEventHandlerImpl;
 import de.hglabor.plugins.kitapi.kit.events.KitItemHandler;
 import de.hglabor.plugins.kitapi.listener.LastHitDetection;
@@ -80,6 +81,7 @@ public final class HardcoreGames extends JavaPlugin {
         new HidePlayersCommand();
         new StartCommand();
         new ListCommand();
+        new KitSettingsCommand(true);
         initJedis();
     }
 
