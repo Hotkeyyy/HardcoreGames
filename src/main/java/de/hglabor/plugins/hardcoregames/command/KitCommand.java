@@ -28,7 +28,7 @@ public class KitCommand {
                             if (GameStateManager.INSTANCE.getPhase().getType().equals(PhaseType.LOBBY)) {
                                 return true;
                             } else if (GameStateManager.INSTANCE.getPhase().getType().equals(PhaseType.INVINCIBILITY)) {
-                                return hgPlayer.getKits().get(index).equals(NoneKit.getInstance());
+                                return hgPlayer.getKits().get(index).equals(NoneKit.INSTANCE);
                             }
                             return false;
                         }

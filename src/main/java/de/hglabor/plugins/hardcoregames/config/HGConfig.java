@@ -62,7 +62,6 @@ public class HGConfig {
         world.setGameRule(GameRule.MOB_GRIEFING, true);
     }
 
-
     public static int getInteger(String key) {
         return HardcoreGames.getPlugin().getConfig().getInt(key);
     }
@@ -77,9 +76,5 @@ public class HGConfig {
 
     public static boolean getBoolean(String key) {
         return HardcoreGames.getPlugin().getConfig().getBoolean(key);
-    }
-
-    public static String getPrefix() {
-        return Localization.INSTANCE.getMessage("hglabor.prefix", Locale.ENGLISH) + " ";
     }
 }

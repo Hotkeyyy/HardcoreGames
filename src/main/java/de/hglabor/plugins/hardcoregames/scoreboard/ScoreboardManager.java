@@ -66,11 +66,11 @@ public final class ScoreboardManager {
                     int index = 1;
                     for (AbstractKit kit : hgPlayer.getKits()) {
                         if (kit.equals(CopyCatKit.INSTANCE)) {
-                            AbstractKit copiedKit = hgPlayer.getKitAttribute(CopyCatKit.INSTANCE);
+                            AbstractKit copiedKit = hgPlayer.getKitAttribute(CopyCatKit.INSTANCE.getKitAttributeKey());
                             ScoreboardFactory.updateEntry(hgPlayer,
                                     "kitValue" + index, ChatColor.BLUE + "" + ChatColor.BOLD + "Kit" + (index == 1 ? "" : index) + ": " + ChatColor.RESET +
                                             (kitDisabled ? ChatColor.STRIKETHROUGH : ChatColor.RESET) + kit.getName() +
-                                            "(" + (copiedKit != null ? ((AbstractKit) hgPlayer.getKitAttribute(CopyCatKit.INSTANCE)).getName() : "None") + ")", "");
+                                            "(" + (copiedKit != null ? ((AbstractKit) hgPlayer.getKitAttribute(CopyCatKit.INSTANCE.getKitAttributeKey())).getName() : "None") + ")", "");
                         } else {
                             ScoreboardFactory.updateEntry(hgPlayer, "kitValue" + index, ChatColor.BLUE + "" + ChatColor.BOLD + "Kit" + (KitApiConfig.getInstance().getInteger("kit.amount") == 1 ? "" : index) + ": " + ChatColor.RESET + (kitDisabled ? ChatColor.STRIKETHROUGH : ChatColor.RESET) + kit.getName(), "");
                         }
