@@ -6,19 +6,10 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-ext.localProps = new Properties()
-try {
-    localProps.load(file("local.properties").newReader())
-} catch (Exception ignored) {
-    // scheiß drauf groovy ist kacke
-}
-
 group = 'de.hglabor'
 version = '0.0.1'
 description = 'Hardcoregames Plugin for HGLabor'
-
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
-
 
 repositories {
     mavenCentral()
@@ -36,27 +27,6 @@ repositories {
     // COMMAND API
 
     maven { url "https://jitpack.io/" }
-    maven {
-        credentials {
-            username = localProps["gpr.user"] ?: System.getenv("USERNAME")
-            password = localProps["gpr.key"] ?: System.getenv("TOKEN")
-        }
-        url 'https://maven.pkg.github.com/HGLabor/Localization'
-    }
-    maven {
-        credentials {
-            username = localProps["gpr.user"] ?: System.getenv("USERNAME")
-            password = localProps["gpr.key"] ?: System.getenv("TOKEN")
-        }
-        url 'https://maven.pkg.github.com/HGLabor/HGLaborKitAPI2.0'
-    }
-    maven {
-        credentials {
-            username = localProps["gpr.user"] ?: System.getenv("USERNAME")
-            password = localProps["gpr.key"] ?: System.getenv("TOKEN")
-        }
-        url 'https://maven.pkg.github.com/HGLabor/HGLaborUtils'
-    }
 }
 
 shadowJar {
