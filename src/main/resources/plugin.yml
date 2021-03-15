@@ -6,4 +6,4 @@ authors: [ NoRiskk ]
 description: HG
 website: hglabor.de
 depend: [ "FastAsyncWorldEdit" ,"ProtocolLib" ]
-softdepend: [ "HGLaborRankSystem","LibsDisguises" ]
+softdepend: [ "LibsDisguises" ]
