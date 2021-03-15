@@ -27,6 +27,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -150,8 +151,11 @@ public class IngamePhase extends GamePhase {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onAlivePlayerDeath(PlayerDeathEvent event) {
+        //For soulstealer
+        if (event.isCancelled())
+            return;
         Player player = event.getEntity();
         Player killer = player.getKiller();
         HGPlayer hgPlayer = playerList.getPlayer(player);
