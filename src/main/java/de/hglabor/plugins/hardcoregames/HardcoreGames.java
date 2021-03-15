@@ -61,7 +61,7 @@ public final class HardcoreGames extends JavaPlugin {
         this.registerEvents();
 
         GameStateManager.INSTANCE.run();
-        
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             HGPlayer hgPlayer = PlayerList.INSTANCE.getPlayer(player);
             ScoreboardFactory.create(hgPlayer);
@@ -90,7 +90,6 @@ public final class HardcoreGames extends JavaPlugin {
         JedisUtils.init(HGConfig.getString(ConfigKeys.REDIS_PW));
         JedisUtils.subscribe(new HGQueueChannel(), JChannels.HGQUEUE_LEAVE, JChannels.HGQUEUE_JOIN);
     }
-
 
     private void registerCommands() {
         new KitCommand();
