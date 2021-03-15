@@ -51,6 +51,7 @@ public class HGConfig {
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
         world.setGameRule(GameRule.MOB_GRIEFING, false);
+        world.setGameRule(GameRule.DO_LIMITED_CRAFTING,true);
     }
 
     public static void inGameWorldSettings(World world) {
