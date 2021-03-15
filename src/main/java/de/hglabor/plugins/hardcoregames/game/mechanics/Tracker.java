@@ -1,6 +1,8 @@
 package de.hglabor.plugins.hardcoregames.game.mechanics;
 
 import com.google.common.collect.ImmutableMap;
+import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
+import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.utils.localization.Localization;
@@ -15,6 +17,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class Tracker implements Listener {
+    private final double distance;
+
+    public Tracker(double distance) {
+        this.distance = distance;
+    }
 
     @EventHandler
     public void onUseTracker(PlayerInteractEvent event) {
@@ -37,7 +44,7 @@ public class Tracker implements Listener {
                 continue;
             if (tracker == possibleTarget)
                 continue;
-            if (getDistanceBetween(tracker, possibleTarget) > 30.0) {
+            if (getDistanceBetween(tracker, possibleTarget) > distance) {
                 return possibleTarget;
             }
         }

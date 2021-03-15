@@ -52,15 +52,8 @@ public final class HardcoreGames extends JavaPlugin {
         return plugin;
     }
 
-    public static void async(Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
-
     @Override
     public void onEnable() {
-        plugin = this;
-        HGConfig.load();
-        Localization.INSTANCE.loadLanguageFiles(Paths.get(this.getDataFolder() + "/lang"), "\u00A7");
         StaffModeManager.INSTANCE.setPlayerHider(new PlayerHider(PlayerList.INSTANCE, this));
         KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this);
         CommandAPI.onEnable(this);
@@ -68,7 +61,7 @@ public final class HardcoreGames extends JavaPlugin {
         this.registerEvents();
 
         GameStateManager.INSTANCE.run();
-
+        
         for (Player player : Bukkit.getOnlinePlayers()) {
             HGPlayer hgPlayer = PlayerList.INSTANCE.getPlayer(player);
             ScoreboardFactory.create(hgPlayer);
@@ -76,18 +69,36 @@ public final class HardcoreGames extends JavaPlugin {
             ScoreboardManager.setBasicScoreboardLayout(hgPlayer);
         }
 
+        registerCommands();
+        initJedis();
+    }
+
+    @Override
+    public void onLoad() {
+        plugin = this;
+        HGConfig.load();
+        Localization.INSTANCE.loadLanguageFiles(Paths.get(this.getDataFolder() + "/lang"), "\u00A7");
+        CommandAPI.onLoad(true);
+    }
+
+    @Override
+    public void onDisable() {
+        JedisUtils.closePool();
+    }
+
+    private void initJedis() {
+        JedisUtils.init(HGConfig.getString(ConfigKeys.REDIS_PW));
+        JedisUtils.subscribe(new HGQueueChannel(), JChannels.HGQUEUE_LEAVE, JChannels.HGQUEUE_JOIN);
+    }
+
+
+    private void registerCommands() {
         new KitCommand();
         new StaffModeCommand(PlayerList.INSTANCE);
         new HidePlayersCommand();
         new StartCommand();
         new ListCommand();
         new KitSettingsCommand(true);
-        initJedis();
-    }
-
-    private void initJedis() {
-        JedisUtils.init(HGConfig.getString(ConfigKeys.REDIS_PW));
-        JedisUtils.subscribe(new HGQueueChannel(), JChannels.HGQUEUE_LEAVE, JChannels.HGQUEUE_JOIN);
     }
 
     private void registerEvents() {
@@ -102,18 +113,8 @@ public final class HardcoreGames extends JavaPlugin {
         pluginManager.registerEvents(new StaffModeListener(PlayerList.INSTANCE), this);
         pluginManager.registerEvents(new KitItemHandler(), this);
         pluginManager.registerEvents(new KitEventHandlerImpl(), this);
-        pluginManager.registerEvents(new Tracker(), this);
+        pluginManager.registerEvents(new Tracker(HGConfig.getDouble(ConfigKeys.TRACKER_DISTANCE)), this);
         pluginManager.registerEvents(new SoupHealing(), this);
         pluginManager.registerEvents(new MooshroomCowNerf(), this);
-    }
-
-    @Override
-    public void onLoad() {
-        CommandAPI.onLoad(true);
-    }
-
-    @Override
-    public void onDisable() {
-        JedisUtils.closePool();
     }
 }
