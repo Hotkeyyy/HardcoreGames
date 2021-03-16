@@ -43,7 +43,7 @@ public class KitCommand {
                         } else if (GameStateManager.INSTANCE.getPhase().getType().equals(PhaseType.INVINCIBILITY)) {
                             kitPlayer.setKit(kit,index);
                             kit.getKitItems().forEach(kitItem -> player.getInventory().addItem(kitItem));
-                            kit.enable(kitPlayer);
+                            kit.onEnable(kitPlayer);
                         }
                     })
                     .register();

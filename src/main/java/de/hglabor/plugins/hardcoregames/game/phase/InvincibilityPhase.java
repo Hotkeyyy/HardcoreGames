@@ -50,7 +50,7 @@ public class InvincibilityPhase extends GamePhase {
                     player.closeInventory();
                     player.getInventory().clear();
                     hgPlayer.getKits().forEach(abstractKit -> KitApi.getInstance().getItemSupplier().giveKitItemsDirectly(hgPlayer, abstractKit));
-                    kit.enable(hgPlayer);
+                    kit.onEnable(hgPlayer);
                 });
             }
             hgPlayer.getBukkitPlayer().ifPresent(player -> {
