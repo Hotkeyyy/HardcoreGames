@@ -173,6 +173,8 @@ public class IngamePhase extends GamePhase {
         if (hgPlayer.getStatus().equals(PlayerStatus.ALIVE)) {
             hgPlayer.setStatus(PlayerStatus.ELIMINATED);
 
+            player.getWorld().strikeLightningEffect(player.getLocation());
+
             deathMessages.broadcastDeathMessage(player);
             final int PLAYERS_LEFT = playerList.getAlivePlayers().size();
             if (PLAYERS_LEFT != 1) {
