@@ -21,10 +21,7 @@ import de.hglabor.utils.noriskutils.PotionUtils;
 import de.hglabor.utils.noriskutils.TimeConverter;
 import de.hglabor.utils.noriskutils.jedis.JChannels;
 import de.hglabor.utils.noriskutils.jedis.JedisUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -40,7 +37,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 public class LobbyPhase extends GamePhase {
-    protected final ItemStack queueItem;
+    protected final ItemStack QUEUE_ITEM;
     protected int forceStartTime;
     protected int requiredPlayerAmount;
     protected int timeLeft;
@@ -51,7 +48,8 @@ public class LobbyPhase extends GamePhase {
         super(HGConfig.getInteger(ConfigKeys.LOBBY_WAITING_TIME));
         this.forceStartTime = HGConfig.getInteger(ConfigKeys.COMMAND_FORCESTART_TIME);
         this.requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
-        this.queueItem = new ItemBuilder(Material.EMERALD).setName("Queue").build();
+        //TODO add desc and maybe localization
+        this.QUEUE_ITEM = new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Queue").build();
     }
 
     @Override
@@ -73,7 +71,7 @@ public class LobbyPhase extends GamePhase {
                 for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
                     waitingPlayer.getBukkitPlayer().ifPresent(player -> {
                         PotionUtils.paralysePlayer(player);
-                        player.getInventory().removeItem(queueItem);
+                        player.getInventory().removeItem(QUEUE_ITEM);
                     });
                     waitingPlayer.teleportToSafeSpawn();
                 }
@@ -162,7 +160,7 @@ public class LobbyPhase extends GamePhase {
         if (isStarting) {
             PotionUtils.paralysePlayer(player);
         } else {
-            player.getInventory().addItem(queueItem);
+            player.getInventory().addItem(QUEUE_ITEM);
         }
     }
 
@@ -187,7 +185,7 @@ public class LobbyPhase extends GamePhase {
     public void onRightClickQueueItem(PlayerInteractEvent event) {
         event.setCancelled(true);
         ItemStack item = event.getItem();
-        if (item != null && item.isSimilar(queueItem)) {
+        if (item != null && item.isSimilar(QUEUE_ITEM)) {
             Player player = event.getPlayer();
             HGPlayer hgPlayer = playerList.getPlayer(player);
             player.sendPluginMessage(HardcoreGames.getPlugin(), ChannelIdentifier.HG_QUEUE, new byte[]{});
@@ -256,8 +254,12 @@ public class LobbyPhase extends GamePhase {
     }
 
     @EventHandler
-    private void onInventoryClickEvent(InventoryClickEvent event) { event.setCancelled(true); }
+    private void onInventoryClickEvent(InventoryClickEvent event) {
+        event.setCancelled(true);
+    }
 
     @EventHandler()
-    public void onInventoryMoveItem(InventoryMoveItemEvent event) { event.setCancelled(true); }
+    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
+        event.setCancelled(true);
+    }
 }
