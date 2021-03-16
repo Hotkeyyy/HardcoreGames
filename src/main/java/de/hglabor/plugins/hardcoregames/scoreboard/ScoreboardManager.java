@@ -8,10 +8,12 @@ import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.kitapi.config.KitApiConfig;
 import de.hglabor.plugins.kitapi.kit.AbstractKit;
 import de.hglabor.plugins.kitapi.kit.kits.CopyCatKit;
+import de.hglabor.plugins.kitapi.kit.kits.NoneKit;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.scoreboard.ScoreboardFactory;
 import de.hglabor.utils.noriskutils.scoreboard.ScoreboardPlayer;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 public final class ScoreboardManager {
     private final static String SPACE = " ";
@@ -47,37 +49,68 @@ public final class ScoreboardManager {
     public static void updateForEveryone(String timeString) {
         for (HGPlayer hgPlayer : PlayerList.INSTANCE.getPlayers()) {
             hgPlayer.getBukkitPlayer().ifPresent(player -> {
+                ScoreboardFactory.updateEntry(hgPlayer, "gameState", createGameStateMessage(hgPlayer));
                 GamePhase phase = GameStateManager.INSTANCE.getPhase();
                 if (phase.getType().equals(PhaseType.LOBBY)) {
                     int queuePlayers = PlayerList.INSTANCE.getQueueingPlayers().size();
                     String inQueue = queuePlayers > 0 ? String.format(" (%d in queue) ", queuePlayers) : "";
-                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + inQueue + "/" + phase.getMaxParticipants(), "");
+                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + inQueue + "/" + phase.getMaxParticipants());
                 } else {
-                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + "/" + phase.getMaxParticipants(), "");
+                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + "/" + phase.getMaxParticipants());
                 }
-                ScoreboardFactory.updateEntry(hgPlayer, "killsValue", ChatColor.AQUA + "" + ChatColor.BOLD + "Kills: " + ChatColor.RESET + hgPlayer.getKills().get(), "");
-                ScoreboardFactory.updateEntry(hgPlayer, "gameStateTime", SPACE + timeString, "");
-                ScoreboardFactory.updateEntry(hgPlayer, "gameState", Localization.INSTANCE.getMessage("scoreboard.gameState." + GameStateManager.INSTANCE.getPhase().getType().name().toLowerCase(), hgPlayer.getLocale()), "");
-
-                boolean kitDisabled = hgPlayer.areKitsDisabled();
-
-                //could possibly be none -> name check
-                if (KitApiConfig.getInstance().getInteger("kit.amount") > 0) {
-                    int index = 1;
-                    for (AbstractKit kit : hgPlayer.getKits()) {
-                        if (kit.equals(CopyCatKit.INSTANCE)) {
-                            AbstractKit copiedKit = hgPlayer.getKitAttribute(CopyCatKit.INSTANCE.getKitAttributeKey());
-                            ScoreboardFactory.updateEntry(hgPlayer,
-                                    "kitValue" + index, ChatColor.BLUE + "" + ChatColor.BOLD + "Kit" + (index == 1 ? "" : index) + ": " + ChatColor.RESET +
-                                            (kitDisabled ? ChatColor.STRIKETHROUGH : ChatColor.RESET) + kit.getName() +
-                                            "(" + (copiedKit != null ? ((AbstractKit) hgPlayer.getKitAttribute(CopyCatKit.INSTANCE.getKitAttributeKey())).getName() : "None") + ")", "");
-                        } else {
-                            ScoreboardFactory.updateEntry(hgPlayer, "kitValue" + index, ChatColor.BLUE + "" + ChatColor.BOLD + "Kit" + (KitApiConfig.getInstance().getInteger("kit.amount") == 1 ? "" : index) + ": " + ChatColor.RESET + (kitDisabled ? ChatColor.STRIKETHROUGH : ChatColor.RESET) + kit.getName(), "");
-                        }
-                        index++;
-                    }
-                }
+                ScoreboardFactory.updateEntry(hgPlayer, "killsValue", createKillsMessage(hgPlayer));
+                ScoreboardFactory.updateEntry(hgPlayer, "gameStateTime", createTimeStringMessage(timeString));
+                createKitEntries(hgPlayer);
             });
         }
+    }
+
+    private static void createKitEntries(HGPlayer hgPlayer) {
+        boolean kitDisabled = hgPlayer.areKitsDisabled();
+        if (KitApiConfig.getInstance().getKitAmount() > 0) {
+            int index = 1;
+            for (AbstractKit kit : hgPlayer.getKits()) {
+                if (kit.equals(CopyCatKit.INSTANCE)) {
+                    AbstractKit copiedKit = hgPlayer.getKitAttribute(CopyCatKit.INSTANCE.getKitAttributeKey());
+                    ScoreboardFactory.updateEntry(hgPlayer, "kitValue" + index, createCopiedKitMessage(kitDisabled, index, kit, copiedKit));
+                } else {
+                    ScoreboardFactory.updateEntry(hgPlayer, "kitValue" + index, createDefaultKitMessage(kitDisabled, index, kit));
+                }
+                index++;
+            }
+        }
+    }
+
+    @NotNull
+    private static String createDefaultKitMessage(boolean kitDisabled, int index, AbstractKit kit) {
+        String kitIndex = KitApiConfig.getInstance().getKitAmount() == 1 ? "" : String.valueOf(index);
+        if (kitDisabled) {
+            return String.format("%s%sKit%s: %s%s%s", ChatColor.BLUE, ChatColor.BOLD, kitIndex, ChatColor.RESET, ChatColor.STRIKETHROUGH, kit.getName());
+        }
+        return String.format("%s%sKit%s: %s%s", ChatColor.BLUE, ChatColor.BOLD, kitIndex, ChatColor.RESET, kit.getName());
+    }
+
+    @NotNull
+    private static String createCopiedKitMessage(boolean kitDisabled, int index, AbstractKit kit, AbstractKit copiedKit) {
+        String copiedKitName = copiedKit != null ? copiedKit.getName() : NoneKit.INSTANCE.getName();
+        String kitIndex = index == 1 ? "" : String.valueOf(index);
+        if (kitDisabled) {
+            return String.format("%s%sKit%s: %s%s%s(%s)", ChatColor.BLUE, ChatColor.BOLD, kitIndex, ChatColor.RESET, ChatColor.STRIKETHROUGH, kit.getName(), copiedKitName);
+        }
+        return String.format("%s%sKit%s: %s%s(%s)", ChatColor.BLUE, ChatColor.BOLD, kitIndex, ChatColor.RESET, kit.getName(), copiedKitName);
+    }
+
+    @NotNull
+    private static String createTimeStringMessage(String timeString) {
+        return SPACE + timeString;
+    }
+
+    private static String createGameStateMessage(HGPlayer hgPlayer) {
+        return Localization.INSTANCE.getMessage("scoreboard.gameState." + GameStateManager.INSTANCE.getPhase().getType().name().toLowerCase(), hgPlayer.getLocale());
+    }
+
+    @NotNull
+    private static String createKillsMessage(HGPlayer hgPlayer) {
+        return ChatColor.AQUA + "" + ChatColor.BOLD + "Kills: " + ChatColor.RESET + hgPlayer.getKills().get();
     }
 }
