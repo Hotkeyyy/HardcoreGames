@@ -50,18 +50,22 @@ public final class ScoreboardManager {
         for (HGPlayer hgPlayer : PlayerList.INSTANCE.getPlayers()) {
             hgPlayer.getBukkitPlayer().ifPresent(player -> {
                 ScoreboardFactory.updateEntry(hgPlayer, "gameState", createGameStateMessage(hgPlayer));
-                GamePhase phase = GameStateManager.INSTANCE.getPhase();
-                if (phase.getType().equals(PhaseType.LOBBY)) {
-                    int queuePlayers = PlayerList.INSTANCE.getQueueingPlayers().size();
-                    String inQueue = queuePlayers > 0 ? String.format(" (%d in queue) ", queuePlayers) : "";
-                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + inQueue + "/" + phase.getMaxParticipants());
-                } else {
-                    ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + "/" + phase.getMaxParticipants());
-                }
+                createPlayersEntry(hgPlayer);
                 ScoreboardFactory.updateEntry(hgPlayer, "killsValue", createKillsMessage(hgPlayer));
                 ScoreboardFactory.updateEntry(hgPlayer, "gameStateTime", createTimeStringMessage(timeString));
                 createKitEntries(hgPlayer);
             });
+        }
+    }
+
+    private static void createPlayersEntry(HGPlayer hgPlayer) {
+        GamePhase phase = GameStateManager.INSTANCE.getPhase();
+        if (phase.getType().equals(PhaseType.LOBBY)) {
+            int queuePlayers = PlayerList.INSTANCE.getQueueingPlayers().size();
+            String inQueue = queuePlayers > 0 ? String.format(" (%d in queue) ", queuePlayers) : "";
+            ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + inQueue + "/" + phase.getMaxParticipants());
+        } else {
+            ScoreboardFactory.updateEntry(hgPlayer, "playersValue", SPACE + phase.getCurrentParticipants() + "/" + phase.getMaxParticipants());
         }
     }
 
