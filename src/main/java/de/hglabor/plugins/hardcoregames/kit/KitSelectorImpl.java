@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class KitSelectorImpl extends KitSelector {
     public KitSelectorImpl() {
-        super(ChatColor.GOLD.toString() + ChatColor.BOLD + "Kit Selector");
+        super(ChatColor.GOLD.toString() + ChatColor.BOLD + "Kit Selector ");
     }
 
     @EventHandler
