@@ -24,7 +24,7 @@ public class Recraft {
                 continue;
             for (RecraftMaterial recraftMaterial : recraftMaterials) {
                 Material type = item.getType();
-                if (recraftMaterial.getMaterials().contains(type)) {
+                if (recraftMaterial.containsKey(type)) {
                     recraftMaterial.put(type, recraftMaterial.getOrDefault(type, 0) + item.getAmount());
                 }
             }
@@ -61,7 +61,7 @@ public class Recraft {
     }
 
     public RecraftMaterial byMaterial(Material material) {
-        return recraftMaterials.stream().filter(recraftMaterial -> recraftMaterial.getMaterials().contains(material)).findFirst().orElse(null);
+        return recraftMaterials.stream().filter(recraftMaterial -> recraftMaterial.containsKey(material)).findFirst().orElse(null);
     }
 
     public float getRecraftPoints() {

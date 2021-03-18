@@ -20,10 +20,6 @@ public class RecraftMaterial extends HashMap<Material,Integer> {
         put(material, get(material) - amount);
     }
 
-    public Set<Material> getMaterials() {
-        return keySet();
-    }
-
     public Material getLowestMaterial() {
         if (size() > 1) {
             if (values().stream().anyMatch(integer -> integer == 0)) {
