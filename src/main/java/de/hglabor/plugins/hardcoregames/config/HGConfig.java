@@ -32,6 +32,7 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.TRACKER_DISTANCE, 30D);
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW, 27);
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER, 2);
+        plugin.getConfig().addDefault(ConfigKeys.MAX_RECRAFT_AMOUNT, 64);
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }

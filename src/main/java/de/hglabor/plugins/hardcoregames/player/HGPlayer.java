@@ -3,6 +3,7 @@ package de.hglabor.plugins.hardcoregames.player;
 import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GameStateManager;
+import de.hglabor.plugins.hardcoregames.game.mechanics.recraft.Recraft;
 import de.hglabor.plugins.hardcoregames.game.phase.LobbyPhase;
 import de.hglabor.plugins.kitapi.player.KitPlayerImpl;
 import de.hglabor.utils.localization.Localization;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HGPlayer extends KitPlayerImpl implements ScoreboardPlayer, StaffPlayer {
+    private final Recraft recraft;
     protected final String name;
     protected boolean isStaffMode;
     protected boolean isVisible;
@@ -36,6 +38,7 @@ public class HGPlayer extends KitPlayerImpl implements ScoreboardPlayer, StaffPl
     protected HGPlayer(UUID uuid, String name) {
         super(uuid);
         this.name = name;
+        this.recraft = new Recraft();
         this.kills = new AtomicInteger();
         this.offlineTime = new AtomicInteger(HGConfig.getInteger(ConfigKeys.PLAYER_OFFLINE_TIME));
         this.status = PlayerStatus.WAITING;
@@ -184,5 +187,9 @@ public class HGPlayer extends KitPlayerImpl implements ScoreboardPlayer, StaffPl
     @Override
     public boolean canSeeStaffModePlayers() {
         return canSeeStaffModePlayers;
+    }
+
+    public Recraft getRecraft() {
+        return recraft;
     }
 }

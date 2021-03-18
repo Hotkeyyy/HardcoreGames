@@ -42,6 +42,7 @@ public interface ConfigKeys {
 
     String MECHANICS = "mechanics";
     String SWORD_DAMAGE_NERF = MECHANICS + "." + "sworddamagemultiplier";
+    String MAX_RECRAFT_AMOUNT = MECHANICS + "." + "maxRecraftAmount";
     String OTHER_TOOLS_DAMAGE_NERF = MECHANICS + "." + "othertoolsdamagemultiplier";
     String TRACKER_DISTANCE = MECHANICS + "." + "trackerDistance";
     String MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW = MECHANICS + "." + "maxsoupsfromcow";

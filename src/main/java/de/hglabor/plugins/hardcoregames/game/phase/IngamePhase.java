@@ -7,6 +7,7 @@ import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GamePhase;
 import de.hglabor.plugins.hardcoregames.game.PhaseType;
 import de.hglabor.plugins.hardcoregames.game.mechanics.SkyBorder;
+import de.hglabor.plugins.hardcoregames.game.mechanics.recraft.RecraftInspector;
 import de.hglabor.plugins.hardcoregames.game.unknown.DeathMessages;
 import de.hglabor.plugins.hardcoregames.game.unknown.OfflinePlayerHandler;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
@@ -44,6 +45,7 @@ public class IngamePhase extends GamePhase {
     protected final int participants;
     protected final int feastAppearance;
     protected final SkyBorder skyBorder;
+    protected final RecraftInspector recraftInspector;
     protected Feast feast;
     protected FeastListener feastListener;
     protected Optional<HGPlayer> winner;
@@ -54,6 +56,7 @@ public class IngamePhase extends GamePhase {
         this.feastAppearance = ChanceUtils.getRandomNumber(HGConfig.getInteger(ConfigKeys.FEAST_LATEST_APPEARANCE), HGConfig.getInteger(ConfigKeys.FEAST_EARLIEST_APPEARANCE));
         this.offlinePlayerManager = new OfflinePlayerHandler(this);
         this.deathMessages = new DeathMessages();
+        this.recraftInspector = new RecraftInspector(HGConfig.getInteger(ConfigKeys.MAX_RECRAFT_AMOUNT));
         this.participants = playerList.getAlivePlayers().size();
     }
 
@@ -66,6 +69,7 @@ public class IngamePhase extends GamePhase {
     @Override
     protected void tick(int timer) {
         skyBorder.tick();
+        if (timer % 5 == 0) recraftInspector.tick();
         announceEnding(timer);
         if (timer > maxPhaseTime) {
             checkForWinnerWithMostKills();
