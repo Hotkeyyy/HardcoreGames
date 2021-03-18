@@ -12,7 +12,7 @@ import de.hglabor.plugins.hardcoregames.game.mechanics.MooshroomCowNerf;
 import de.hglabor.plugins.hardcoregames.game.mechanics.SoupHealing;
 import de.hglabor.plugins.hardcoregames.game.mechanics.Tracker;
 import de.hglabor.plugins.hardcoregames.kit.KitSelectorImpl;
-import de.hglabor.plugins.hardcoregames.listener.PlayerJoinListener;
+import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardJoinListener;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.queue.HGQueueChannel;
@@ -105,7 +105,7 @@ public final class HardcoreGames extends JavaPlugin {
     private void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new ServerPingListener(), this);
-        pluginManager.registerEvents(new PlayerJoinListener(), this);
+        pluginManager.registerEvents(new ScoreboardJoinListener(), this);
         pluginManager.registerEvents(new RemoveHitCooldown(), this);
         pluginManager.registerEvents(new OldKnockback(this), this);
         pluginManager.registerEvents(new DurabilityFix(), this);

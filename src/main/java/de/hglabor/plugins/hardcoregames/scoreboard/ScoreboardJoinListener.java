@@ -1,4 +1,4 @@
-package de.hglabor.plugins.hardcoregames.listener;
+package de.hglabor.plugins.hardcoregames.scoreboard;
 
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoinListener implements Listener {
+public class ScoreboardJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -19,6 +19,8 @@ public class PlayerJoinListener implements Listener {
             ScoreboardFactory.create(hgPlayer);
             ScoreboardFactory.addPlayerToNoCollision(player, hgPlayer);
             ScoreboardManager.setBasicScoreboardLayout(hgPlayer);
+        } else {
+            player.setScoreboard(hgPlayer.getScoreboard());
         }
     }
 }
