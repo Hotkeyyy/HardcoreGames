@@ -4,13 +4,13 @@ public interface ConfigKeys {
     String LOBBY = "lobby";
     String LOBBY_PLAYERS_NEEDED = LOBBY + "." + "playersToStart";
     String LOBBY_WAITING_TIME = LOBBY + "." + "timeToWait";
+    String LOBBY_PREPARE_START_TIME = LOBBY + "." + "prepareStartTime";
 
     String INVINCIBILITY = "invincibility";
     String INVINCIBILITY_TIME = INVINCIBILITY + "." + "time";
 
     String INGAME = "ingame";
     String INGAME_MAX_PLAYTIME = INGAME + "." + "maxPlayTime";
-
 
     String END = "end";
     String END_RESTART_AFTER = END + "." + "restartAfter";

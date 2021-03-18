@@ -38,16 +38,14 @@ import java.util.Optional;
 
 public class LobbyPhase extends GamePhase {
     protected final ItemStack QUEUE_ITEM;
-    protected int forceStartTime;
-    protected int requiredPlayerAmount;
-    protected int timeLeft;
-    protected boolean isStarting;
-
+    protected int forceStartTime, prepareStartTime, timeLeft, requiredPlayerAmount;
+    protected boolean isStarting, isForceStarting;
 
     public LobbyPhase() {
         super(HGConfig.getInteger(ConfigKeys.LOBBY_WAITING_TIME));
         this.forceStartTime = HGConfig.getInteger(ConfigKeys.COMMAND_FORCESTART_TIME);
         this.requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
+        this.prepareStartTime = HGConfig.getInteger(ConfigKeys.LOBBY_PREPARE_START_TIME);
         //TODO add desc and maybe localization
         this.QUEUE_ITEM = new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Queue").build();
     }
@@ -65,37 +63,46 @@ public class LobbyPhase extends GamePhase {
             timeLeft = maxPhaseTime - timer;
             announceRemainingTime(timeLeft);
 
-            if (timeLeft == forceStartTime) {
-                isStarting = true;
-                JedisUtils.publish(JChannels.HGQUEUE_MOVE, String.valueOf(Bukkit.getPort()));
-                for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
-                    waitingPlayer.getBukkitPlayer().ifPresent(player -> {
-                        PotionUtils.paralysePlayer(player);
-                        player.getInventory().removeItem(QUEUE_ITEM);
-                    });
-                    waitingPlayer.teleportToSafeSpawn();
-                }
+            if (timeLeft == prepareStartTime && !isForceStarting) {
+                prepareToStart();
             }
 
             if (timeLeft <= 0) {
                 GameStateManager.INSTANCE.resetTimer();
                 if (PlayerList.INSTANCE.getWaitingPlayers().size() >= requiredPlayerAmount) {
                     //TODO SOUNDS
-                    this.startNextPhase();
+                    startNextPhase();
                     ChatUtils.broadcastMessage("lobbyPhase.gameStarts");
                 } else {
                     ChatUtils.broadcastMessage("lobbyPhase.notEnoughPlayers", ImmutableMap.of("requiredPlayers", String.valueOf(requiredPlayerAmount)));
-                    isStarting = false;
-                    playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
+                    prepareToWait();
                 }
             }
         } else {
-            if (isStarting) {
-                Logger.debug("Setting all players lobby rdy");
-                isStarting = false;
-                playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
-            }
+            prepareToWait();
             GameStateManager.INSTANCE.resetTimer();
+        }
+    }
+
+    public void prepareToStart() {
+        isStarting = true;
+        JedisUtils.publish(JChannels.HGQUEUE_MOVE, String.valueOf(Bukkit.getPort()));
+        for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
+            waitingPlayer.getBukkitPlayer().ifPresent(player -> {
+                PotionUtils.paralysePlayer(player);
+                player.getInventory().removeItem(QUEUE_ITEM);
+            });
+            waitingPlayer.teleportToSafeSpawn();
+        }
+    }
+
+    public void prepareToWait() {
+        if (isStarting) {
+            Logger.debug("Setting all players lobby rdy");
+            isStarting = false;
+            isForceStarting = false;
+            requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
+            playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
         }
     }
 
@@ -120,8 +127,8 @@ public class LobbyPhase extends GamePhase {
         return isStarting;
     }
 
-    public void setStarting(boolean isStarting) {
-        this.isStarting = isStarting;
+    public void setForceStarted(boolean forceStarted) {
+        isForceStarting = forceStarted;
     }
 
     @Override
@@ -258,8 +265,12 @@ public class LobbyPhase extends GamePhase {
         event.setCancelled(true);
     }
 
-    @EventHandler()
+    @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
         event.setCancelled(true);
+    }
+
+    public void setRequiredPlayerAmount(int requiredPlayerAmount) {
+        this.requiredPlayerAmount = requiredPlayerAmount;
     }
 }

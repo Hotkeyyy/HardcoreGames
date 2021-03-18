@@ -1,10 +1,7 @@
 package de.hglabor.plugins.hardcoregames;
 
 import com.google.gson.Gson;
-import de.hglabor.plugins.hardcoregames.command.FeastCommand;
-import de.hglabor.plugins.hardcoregames.command.KitCommand;
-import de.hglabor.plugins.hardcoregames.command.ListCommand;
-import de.hglabor.plugins.hardcoregames.command.StartCommand;
+import de.hglabor.plugins.hardcoregames.command.*;
 import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GameStateManager;
@@ -99,6 +96,7 @@ public final class HardcoreGames extends JavaPlugin {
         new StartCommand();
         new ListCommand();
         new FeastCommand();
+        new ExtendCommand();
         new KitSettingsCommand(true);
     }
 
