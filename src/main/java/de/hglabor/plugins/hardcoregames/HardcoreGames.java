@@ -1,6 +1,7 @@
 package de.hglabor.plugins.hardcoregames;
 
 import com.google.gson.Gson;
+import de.hglabor.plugins.hardcoregames.command.FeastCommand;
 import de.hglabor.plugins.hardcoregames.command.KitCommand;
 import de.hglabor.plugins.hardcoregames.command.ListCommand;
 import de.hglabor.plugins.hardcoregames.command.StartCommand;
@@ -97,6 +98,7 @@ public final class HardcoreGames extends JavaPlugin {
         new HidePlayersCommand();
         new StartCommand();
         new ListCommand();
+        new FeastCommand();
         new KitSettingsCommand(true);
     }
 

@@ -242,4 +242,8 @@ public class IngamePhase extends GamePhase {
     protected GamePhase getNextPhase() {
         return new EndPhase(winner, participants);
     }
+
+    public Feast getFeast() {
+        return feast;
+    }
 }
