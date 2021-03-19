@@ -101,35 +101,25 @@ public class IngamePhase extends GamePhase {
     }
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-        HGPlayer hgPlayer = playerList.getPlayer(player);
-        Logger.debug(String.format("%s joined with status %s in phase %s", hgPlayer.getName(), hgPlayer.getStatus(), this.getType()));
-        switch (hgPlayer.getStatus()) {
-            case ELIMINATED:
-                if (player.hasPermission("hglabor.spectator")) break;
-                event.setKickMessage(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.getPlayerLocale(player)));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                break;
-            case WAITING:
-                if (player.hasPermission("hglabor.spectator")) {
-                    hgPlayer.setStatus(PlayerStatus.SPECTATOR);
-                } else {
-                    event.setKickMessage(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                }
-                break;
-        }
-    }
-
-    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         HGPlayer hgPlayer = playerList.getPlayer(player);
+        if (hgPlayer.getStatus().equals(PlayerStatus.WAITING)) {
+            if (player.hasPermission("hglabor.spectator")) {
+                hgPlayer.setStatus(PlayerStatus.SPECTATOR);
+            } else {
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
+            }
+        }
         switch (hgPlayer.getStatus()) {
             case OFFLINE:
                 offlinePlayerManager.stopTimer(hgPlayer);
                 hgPlayer.setStatus(PlayerStatus.ALIVE);
+                break;
+            case ELIMINATED:
+                if (player.hasPermission("hglabor.spectator"))
+                    break;
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.getPlayerLocale(player)));
                 break;
             case SPECTATOR:
                 event.setJoinMessage(null);
