@@ -6,8 +6,6 @@ import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GamePhase;
 import de.hglabor.plugins.hardcoregames.game.PhaseType;
-import de.hglabor.plugins.hardcoregames.game.mechanics.SkyBorder;
-import de.hglabor.plugins.hardcoregames.game.mechanics.recraft.RecraftInspector;
 import de.hglabor.plugins.hardcoregames.game.unknown.DeathMessages;
 import de.hglabor.plugins.hardcoregames.game.unknown.OfflinePlayerHandler;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
@@ -15,6 +13,8 @@ import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.kitapi.KitApi;
+import de.hglabor.plugins.kitapi.pvp.SkyBorder;
+import de.hglabor.plugins.kitapi.pvp.recraft.RecraftInspector;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.ChanceUtils;
 import de.hglabor.utils.noriskutils.ChatUtils;
@@ -68,8 +68,8 @@ public class IngamePhase extends GamePhase {
 
     @Override
     protected void tick(int timer) {
-        skyBorder.tick();
-        if (timer % 5 == 0) recraftInspector.tick();
+        skyBorder.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
+        if (timer % 5 == 0) recraftInspector.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
         announceEnding(timer);
         if (timer > maxPhaseTime) {
             checkForWinnerWithMostKills();
