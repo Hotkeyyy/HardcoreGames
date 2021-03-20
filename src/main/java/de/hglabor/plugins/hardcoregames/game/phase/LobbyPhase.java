@@ -15,10 +15,7 @@ import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.kitapi.KitApi;
-import de.hglabor.utils.noriskutils.ChatUtils;
-import de.hglabor.utils.noriskutils.ItemBuilder;
-import de.hglabor.utils.noriskutils.PotionUtils;
-import de.hglabor.utils.noriskutils.TimeConverter;
+import de.hglabor.utils.noriskutils.*;
 import de.hglabor.utils.noriskutils.jedis.JChannels;
 import de.hglabor.utils.noriskutils.jedis.JedisUtils;
 import org.bukkit.*;
@@ -37,7 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 public class LobbyPhase extends GamePhase {
-    protected final ItemStack QUEUE_ITEM;
+    protected final ItemStack QUEUE_ITEM, RANDOM_TP;
     protected int forceStartTime, prepareStartTime, timeLeft, requiredPlayerAmount;
     protected boolean isStarting, isForceStarting;
 
@@ -47,7 +44,8 @@ public class LobbyPhase extends GamePhase {
         this.requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
         this.prepareStartTime = HGConfig.getInteger(ConfigKeys.LOBBY_PREPARE_START_TIME);
         //TODO add desc and maybe localization
-        this.QUEUE_ITEM = new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Queue").build();
+        this.QUEUE_ITEM = new ItemBuilder(Material.HEART_OF_THE_SEA).setName(ChatColor.GREEN + "Queue").build();
+        this.RANDOM_TP = new ItemBuilder(Material.LODESTONE).setName(ChatColor.AQUA + "Random Teleport").build();
     }
 
     @Override
@@ -91,6 +89,7 @@ public class LobbyPhase extends GamePhase {
             waitingPlayer.getBukkitPlayer().ifPresent(player -> {
                 PotionUtils.paralysePlayer(player);
                 player.getInventory().removeItem(QUEUE_ITEM);
+                player.getInventory().removeItem(RANDOM_TP);
             });
             waitingPlayer.teleportToSafeSpawn();
         }
@@ -168,6 +167,7 @@ public class LobbyPhase extends GamePhase {
             PotionUtils.paralysePlayer(player);
         } else {
             player.getInventory().addItem(QUEUE_ITEM);
+            player.getInventory().addItem(RANDOM_TP);
         }
     }
 
@@ -191,12 +191,19 @@ public class LobbyPhase extends GamePhase {
     @EventHandler
     public void onRightClickQueueItem(PlayerInteractEvent event) {
         event.setCancelled(true);
+        Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        if (item != null && item.isSimilar(QUEUE_ITEM)) {
-            Player player = event.getPlayer();
+        if (item == null) {
+            return;
+        }
+        if (item.isSimilar(QUEUE_ITEM)) {
             HGPlayer hgPlayer = playerList.getPlayer(player);
             player.sendPluginMessage(HardcoreGames.getPlugin(), ChannelIdentifier.HG_QUEUE, new byte[]{});
             hgPlayer.setStatus(PlayerStatus.QUEUE);
+        } else if (item.isSimilar(RANDOM_TP)) {
+            World world = player.getWorld();
+            int borderSize = (int) (world.getWorldBorder().getSize() * 2);
+            player.teleportAsync(TeleportUtils.getHighestRandomLocation(world, borderSize, -borderSize, HeightMap.MOTION_BLOCKING_NO_LEAVES));
         }
     }
 
