@@ -14,8 +14,12 @@ import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.hardcoregames.util.Logger;
+import de.hglabor.plugins.hardcoregames.util.RandomTeleport;
 import de.hglabor.plugins.kitapi.KitApi;
-import de.hglabor.utils.noriskutils.*;
+import de.hglabor.utils.noriskutils.ChatUtils;
+import de.hglabor.utils.noriskutils.ItemBuilder;
+import de.hglabor.utils.noriskutils.PotionUtils;
+import de.hglabor.utils.noriskutils.TimeConverter;
 import de.hglabor.utils.noriskutils.jedis.JChannels;
 import de.hglabor.utils.noriskutils.jedis.JedisUtils;
 import org.bukkit.*;
@@ -201,9 +205,7 @@ public class LobbyPhase extends GamePhase {
             player.sendPluginMessage(HardcoreGames.getPlugin(), ChannelIdentifier.HG_QUEUE, new byte[]{});
             hgPlayer.setStatus(PlayerStatus.QUEUE);
         } else if (item.isSimilar(RANDOM_TP)) {
-            World world = player.getWorld();
-            int borderSize = (int) (world.getWorldBorder().getSize() * 2);
-            player.teleportAsync(TeleportUtils.getHighestRandomLocation(world, borderSize, -borderSize, HeightMap.MOTION_BLOCKING_NO_LEAVES));
+            RandomTeleport.teleportAsync(player);
         }
     }
 

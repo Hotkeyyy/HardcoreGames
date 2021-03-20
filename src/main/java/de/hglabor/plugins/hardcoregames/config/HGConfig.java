@@ -33,6 +33,7 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW, 27);
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER, 2);
         plugin.getConfig().addDefault(ConfigKeys.MAX_RECRAFT_AMOUNT, 64);
+        plugin.getConfig().addDefault(ConfigKeys.WORLD_BORDER_SIZE, 500);
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -42,6 +43,7 @@ public class HGConfig {
         world.setTime(6000);
         world.setStorm(false);
         world.setThundering(false);
+        world.getWorldBorder().setSize(getInteger(ConfigKeys.WORLD_BORDER_SIZE)*2);
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);

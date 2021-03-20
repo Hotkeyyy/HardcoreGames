@@ -45,6 +45,7 @@ public interface ConfigKeys {
     String MAX_RECRAFT_AMOUNT = MECHANICS + "." + "maxRecraftAmount";
     String OTHER_TOOLS_DAMAGE_NERF = MECHANICS + "." + "othertoolsdamagemultiplier";
     String TRACKER_DISTANCE = MECHANICS + "." + "trackerDistance";
+    String WORLD_BORDER_SIZE = MECHANICS + "." + "worldBorderSize";
     String MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW = MECHANICS + "." + "maxsoupsfromcow";
     String MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER = MECHANICS + "." + "soupsinaddition"; // For players in Combat
 }
