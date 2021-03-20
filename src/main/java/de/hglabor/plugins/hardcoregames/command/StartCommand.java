@@ -19,6 +19,7 @@ public class StartCommand {
 
     public StartCommand() {
         new CommandAPICommand("start")
+                .withAliases("fs","forcestart","begin")
                 .withPermission("hglabor.forcestart")
                 .withRequirement((commandSender) -> GameStateManager.INSTANCE.getPhase().getType().equals(PhaseType.LOBBY))
                 .executesPlayer((player, objects) -> {
