@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'de.hglabor'
-version = '0.0.2'
+version = '0.0.3'
 description = 'Hardcoregames Plugin for HGLabor'
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
