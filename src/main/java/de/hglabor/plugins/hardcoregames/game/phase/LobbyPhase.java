@@ -14,6 +14,7 @@ import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.hardcoregames.util.Logger;
+import de.hglabor.plugins.hardcoregames.util.RandomTeleport;
 import de.hglabor.plugins.kitapi.KitApi;
 import de.hglabor.utils.noriskutils.ChatUtils;
 import de.hglabor.utils.noriskutils.ItemBuilder;
@@ -37,19 +38,18 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 public class LobbyPhase extends GamePhase {
-    protected final ItemStack QUEUE_ITEM;
-    protected int forceStartTime;
-    protected int requiredPlayerAmount;
-    protected int timeLeft;
-    protected boolean isStarting;
-
+    protected final ItemStack QUEUE_ITEM, RANDOM_TP;
+    protected int forceStartTime, prepareStartTime, timeLeft, requiredPlayerAmount;
+    protected boolean isStarting, isForceStarting;
 
     public LobbyPhase() {
         super(HGConfig.getInteger(ConfigKeys.LOBBY_WAITING_TIME));
         this.forceStartTime = HGConfig.getInteger(ConfigKeys.COMMAND_FORCESTART_TIME);
         this.requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
+        this.prepareStartTime = HGConfig.getInteger(ConfigKeys.LOBBY_PREPARE_START_TIME);
         //TODO add desc and maybe localization
-        this.QUEUE_ITEM = new ItemBuilder(Material.EMERALD).setName(ChatColor.GREEN + "Queue").build();
+        this.QUEUE_ITEM = new ItemBuilder(Material.HEART_OF_THE_SEA).setName(ChatColor.GREEN + "Queue").build();
+        this.RANDOM_TP = new ItemBuilder(Material.LODESTONE).setName(ChatColor.AQUA + "Random Teleport").build();
     }
 
     @Override
@@ -65,37 +65,47 @@ public class LobbyPhase extends GamePhase {
             timeLeft = maxPhaseTime - timer;
             announceRemainingTime(timeLeft);
 
-            if (timeLeft == forceStartTime) {
-                isStarting = true;
-                JedisUtils.publish(JChannels.HGQUEUE_MOVE, String.valueOf(Bukkit.getPort()));
-                for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
-                    waitingPlayer.getBukkitPlayer().ifPresent(player -> {
-                        PotionUtils.paralysePlayer(player);
-                        player.getInventory().removeItem(QUEUE_ITEM);
-                    });
-                    waitingPlayer.teleportToSafeSpawn();
-                }
+            if (timeLeft == prepareStartTime && !isForceStarting) {
+                prepareToStart();
             }
 
             if (timeLeft <= 0) {
                 GameStateManager.INSTANCE.resetTimer();
                 if (PlayerList.INSTANCE.getWaitingPlayers().size() >= requiredPlayerAmount) {
                     //TODO SOUNDS
-                    this.startNextPhase();
+                    startNextPhase();
                     ChatUtils.broadcastMessage("lobbyPhase.gameStarts");
                 } else {
                     ChatUtils.broadcastMessage("lobbyPhase.notEnoughPlayers", ImmutableMap.of("requiredPlayers", String.valueOf(requiredPlayerAmount)));
-                    isStarting = false;
-                    playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
+                    prepareToWait();
                 }
             }
         } else {
-            if (isStarting) {
-                Logger.debug("Setting all players lobby rdy");
-                isStarting = false;
-                playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
-            }
+            prepareToWait();
             GameStateManager.INSTANCE.resetTimer();
+        }
+    }
+
+    public void prepareToStart() {
+        isStarting = true;
+        JedisUtils.publish(JChannels.HGQUEUE_MOVE, String.valueOf(Bukkit.getPort()));
+        for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
+            waitingPlayer.getBukkitPlayer().ifPresent(player -> {
+                PotionUtils.paralysePlayer(player);
+                player.getInventory().removeItem(QUEUE_ITEM);
+                player.getInventory().removeItem(RANDOM_TP);
+            });
+            waitingPlayer.teleportToSafeSpawn();
+        }
+    }
+
+    public void prepareToWait() {
+        if (isStarting) {
+            Logger.debug("Setting all players lobby rdy");
+            isStarting = false;
+            isForceStarting = false;
+            requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
+            playerList.getWaitingPlayers().forEach(player -> player.getBukkitPlayer().ifPresent(this::setPlayerLobbyReady));
         }
     }
 
@@ -120,8 +130,8 @@ public class LobbyPhase extends GamePhase {
         return isStarting;
     }
 
-    public void setStarting(boolean isStarting) {
-        this.isStarting = isStarting;
+    public void setForceStarted(boolean forceStarted) {
+        isForceStarting = forceStarted;
     }
 
     @Override
@@ -161,6 +171,7 @@ public class LobbyPhase extends GamePhase {
             PotionUtils.paralysePlayer(player);
         } else {
             player.getInventory().addItem(QUEUE_ITEM);
+            player.getInventory().addItem(RANDOM_TP);
         }
     }
 
@@ -184,12 +195,17 @@ public class LobbyPhase extends GamePhase {
     @EventHandler
     public void onRightClickQueueItem(PlayerInteractEvent event) {
         event.setCancelled(true);
+        Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        if (item != null && item.isSimilar(QUEUE_ITEM)) {
-            Player player = event.getPlayer();
+        if (item == null) {
+            return;
+        }
+        if (item.isSimilar(QUEUE_ITEM)) {
             HGPlayer hgPlayer = playerList.getPlayer(player);
             player.sendPluginMessage(HardcoreGames.getPlugin(), ChannelIdentifier.HG_QUEUE, new byte[]{});
             hgPlayer.setStatus(PlayerStatus.QUEUE);
+        } else if (item.isSimilar(RANDOM_TP)) {
+            RandomTeleport.teleportAsync(player);
         }
     }
 
@@ -258,8 +274,12 @@ public class LobbyPhase extends GamePhase {
         event.setCancelled(true);
     }
 
-    @EventHandler()
+    @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
         event.setCancelled(true);
+    }
+
+    public void setRequiredPlayerAmount(int requiredPlayerAmount) {
+        this.requiredPlayerAmount = requiredPlayerAmount;
     }
 }

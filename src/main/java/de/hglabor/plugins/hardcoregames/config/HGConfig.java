@@ -1,12 +1,9 @@
 package de.hglabor.plugins.hardcoregames.config;
 
 import de.hglabor.plugins.hardcoregames.HardcoreGames;
-import de.hglabor.utils.localization.Localization;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
-
-import java.util.Locale;
 
 public class HGConfig {
     private HGConfig() {
@@ -16,6 +13,7 @@ public class HGConfig {
         HardcoreGames plugin = HardcoreGames.getPlugin();
         plugin.getConfig().addDefault(ConfigKeys.LOBBY_PLAYERS_NEEDED, 2);
         plugin.getConfig().addDefault(ConfigKeys.LOBBY_WAITING_TIME, 180);
+        plugin.getConfig().addDefault(ConfigKeys.LOBBY_PREPARE_START_TIME, 15);
         plugin.getConfig().addDefault(ConfigKeys.INVINCIBILITY_TIME, 120);
         plugin.getConfig().addDefault(ConfigKeys.INGAME_MAX_PLAYTIME, 1800);
         plugin.getConfig().addDefault(ConfigKeys.END_RESTART_AFTER, 10);
@@ -34,6 +32,8 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.TRACKER_DISTANCE, 30D);
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW, 27);
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER, 2);
+        plugin.getConfig().addDefault(ConfigKeys.MAX_RECRAFT_AMOUNT, 64);
+        plugin.getConfig().addDefault(ConfigKeys.WORLD_BORDER_SIZE, 500);
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -43,6 +43,7 @@ public class HGConfig {
         world.setTime(6000);
         world.setStorm(false);
         world.setThundering(false);
+        world.getWorldBorder().setSize(getInteger(ConfigKeys.WORLD_BORDER_SIZE)*2);
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
@@ -52,7 +53,7 @@ public class HGConfig {
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
         world.setGameRule(GameRule.MOB_GRIEFING, false);
-        world.setGameRule(GameRule.DO_LIMITED_CRAFTING,true);
+        //world.setGameRule(GameRule.DO_LIMITED_CRAFTING,true);
     }
 
     public static void inGameWorldSettings(World world) {

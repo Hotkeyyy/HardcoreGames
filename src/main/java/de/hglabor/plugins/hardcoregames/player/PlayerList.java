@@ -2,16 +2,18 @@ package de.hglabor.plugins.hardcoregames.player;
 
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.kitapi.player.KitPlayer;
+import de.hglabor.plugins.kitapi.supplier.IPlayerList;
 import de.hglabor.plugins.kitapi.supplier.KitPlayerSupplier;
 import de.hglabor.utils.noriskutils.queue.hg.HGQueuePlayerInfo;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayer;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayerSupplier;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class PlayerList implements KitPlayerSupplier, StaffPlayerSupplier {
+public final class PlayerList implements IPlayerList, StaffPlayerSupplier {
     public static final PlayerList INSTANCE = new PlayerList();
     private final Map<UUID, HGPlayer> players;
 
@@ -74,5 +76,18 @@ public final class PlayerList implements KitPlayerSupplier, StaffPlayerSupplier 
     public Player getRandomActivePlayer() {
         List<HGPlayer> collect = getPlayers().stream().filter(hgPlayer -> hgPlayer.getPlayer() != null && (hgPlayer.getStatus().equals(PlayerStatus.WAITING) || hgPlayer.getStatus().equals(PlayerStatus.ALIVE))).collect(Collectors.toList());
         return collect.get(new Random().nextInt(collect.size())).getPlayer();
+    }
+
+    @Override
+    public List<Entity> getTrackingTargets() {
+        List<Entity> entites = new ArrayList<>();
+        getOnlinePlayers().forEach(player -> player.getBukkitPlayer().ifPresent(entites::add));
+        return entites;
+    }
+
+    public List<Player> getOnlineEntityPlayers() {
+        List<Player> entites = new ArrayList<>();
+        getOnlinePlayers().forEach(player -> player.getBukkitPlayer().ifPresent(entites::add));
+        return entites;
     }
 }

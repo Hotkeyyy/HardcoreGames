@@ -1,21 +1,17 @@
 package de.hglabor.plugins.hardcoregames;
 
 import com.google.gson.Gson;
-import de.hglabor.plugins.hardcoregames.command.KitCommand;
-import de.hglabor.plugins.hardcoregames.command.ListCommand;
-import de.hglabor.plugins.hardcoregames.command.StartCommand;
+import de.hglabor.plugins.hardcoregames.command.*;
 import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GameStateManager;
 import de.hglabor.plugins.hardcoregames.game.mechanics.MooshroomCowNerf;
-import de.hglabor.plugins.hardcoregames.game.mechanics.SoupHealing;
-import de.hglabor.plugins.hardcoregames.game.mechanics.Tracker;
 import de.hglabor.plugins.hardcoregames.kit.KitSelectorImpl;
-import de.hglabor.plugins.hardcoregames.listener.PlayerJoinListener;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.queue.HGQueueChannel;
 import de.hglabor.plugins.hardcoregames.queue.ServerPingListener;
+import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardJoinListener;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.kitapi.KitApi;
@@ -23,6 +19,9 @@ import de.hglabor.plugins.kitapi.command.KitSettingsCommand;
 import de.hglabor.plugins.kitapi.kit.events.KitEventHandlerImpl;
 import de.hglabor.plugins.kitapi.kit.events.KitItemHandler;
 import de.hglabor.plugins.kitapi.listener.LastHitDetection;
+import de.hglabor.plugins.kitapi.pvp.CPSChecker;
+import de.hglabor.plugins.kitapi.pvp.SoupHealing;
+import de.hglabor.plugins.kitapi.pvp.Tracker;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.command.HidePlayersCommand;
 import de.hglabor.utils.noriskutils.jedis.JChannels;
@@ -97,13 +96,15 @@ public final class HardcoreGames extends JavaPlugin {
         new HidePlayersCommand();
         new StartCommand();
         new ListCommand();
+        new FeastCommand();
+        new ExtendCommand();
         new KitSettingsCommand(true);
     }
 
     private void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new ServerPingListener(), this);
-        pluginManager.registerEvents(new PlayerJoinListener(), this);
+        pluginManager.registerEvents(new ScoreboardJoinListener(), this);
         pluginManager.registerEvents(new RemoveHitCooldown(), this);
         pluginManager.registerEvents(new OldKnockback(this), this);
         pluginManager.registerEvents(new DurabilityFix(), this);
@@ -112,7 +113,8 @@ public final class HardcoreGames extends JavaPlugin {
         pluginManager.registerEvents(new StaffModeListener(PlayerList.INSTANCE), this);
         pluginManager.registerEvents(new KitItemHandler(), this);
         pluginManager.registerEvents(new KitEventHandlerImpl(), this);
-        pluginManager.registerEvents(new Tracker(HGConfig.getDouble(ConfigKeys.TRACKER_DISTANCE)), this);
+        pluginManager.registerEvents(new CPSChecker(), this);
+        pluginManager.registerEvents(new Tracker(HGConfig.getDouble(ConfigKeys.TRACKER_DISTANCE), PlayerList.INSTANCE), this);
         pluginManager.registerEvents(new SoupHealing(), this);
         pluginManager.registerEvents(new MooshroomCowNerf(), this);
     }

@@ -4,13 +4,13 @@ public interface ConfigKeys {
     String LOBBY = "lobby";
     String LOBBY_PLAYERS_NEEDED = LOBBY + "." + "playersToStart";
     String LOBBY_WAITING_TIME = LOBBY + "." + "timeToWait";
+    String LOBBY_PREPARE_START_TIME = LOBBY + "." + "prepareStartTime";
 
     String INVINCIBILITY = "invincibility";
     String INVINCIBILITY_TIME = INVINCIBILITY + "." + "time";
 
     String INGAME = "ingame";
     String INGAME_MAX_PLAYTIME = INGAME + "." + "maxPlayTime";
-
 
     String END = "end";
     String END_RESTART_AFTER = END + "." + "restartAfter";
@@ -42,8 +42,10 @@ public interface ConfigKeys {
 
     String MECHANICS = "mechanics";
     String SWORD_DAMAGE_NERF = MECHANICS + "." + "sworddamagemultiplier";
+    String MAX_RECRAFT_AMOUNT = MECHANICS + "." + "maxRecraftAmount";
     String OTHER_TOOLS_DAMAGE_NERF = MECHANICS + "." + "othertoolsdamagemultiplier";
     String TRACKER_DISTANCE = MECHANICS + "." + "trackerDistance";
+    String WORLD_BORDER_SIZE = MECHANICS + "." + "worldBorderSize";
     String MOOSHROOM_COW_NERF_MAX_SOUPS_FROM_COW = MECHANICS + "." + "maxsoupsfromcow";
     String MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER = MECHANICS + "." + "soupsinaddition"; // For players in Combat
 }

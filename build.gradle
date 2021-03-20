@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'de.hglabor'
-version = '0.0.2'
+version = '0.0.3'
 description = 'Hardcoregames Plugin for HGLabor'
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
@@ -36,7 +36,7 @@ shadowJar {
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compile 'de.hglabor:kit-api:0.2.1'
-    compile 'de.hglabor:localization:0.0.5'
+    compile 'de.hglabor:localization:0.0.6'
     compile 'de.hglabor:hglabor-utils:0.0.4'
     compile 'dev.jorel:commandapi-shade:5.8'
     compile 'redis.clients:jedis:3.5.1'

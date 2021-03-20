@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class GamePhase implements Listener {
     protected final JavaPlugin plugin;
     protected final PlayerList playerList;
-    protected final int maxPhaseTime;
+    protected int maxPhaseTime;
 
     protected GamePhase(int maxPhaseTime) {
         this.maxPhaseTime = maxPhaseTime;
@@ -25,7 +25,9 @@ public abstract class GamePhase implements Listener {
 
     public abstract PhaseType getType();
 
-    public int getRawTime() { return GameStateManager.INSTANCE.getTimer(); }
+    public int getRawTime() {
+        return GameStateManager.INSTANCE.getTimer();
+    }
 
     protected abstract String getTimeString(int timer);
 
@@ -45,5 +47,9 @@ public abstract class GamePhase implements Listener {
 
     public int getMaxPhaseTime() {
         return maxPhaseTime;
+    }
+
+    public void setMaxPhaseTime(int maxPhaseTime) {
+        this.maxPhaseTime = maxPhaseTime;
     }
 }

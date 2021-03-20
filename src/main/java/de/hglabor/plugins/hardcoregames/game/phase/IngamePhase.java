@@ -6,7 +6,6 @@ import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GamePhase;
 import de.hglabor.plugins.hardcoregames.game.PhaseType;
-import de.hglabor.plugins.hardcoregames.game.mechanics.SkyBorder;
 import de.hglabor.plugins.hardcoregames.game.unknown.DeathMessages;
 import de.hglabor.plugins.hardcoregames.game.unknown.OfflinePlayerHandler;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
@@ -14,6 +13,8 @@ import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.kitapi.KitApi;
+import de.hglabor.plugins.kitapi.pvp.SkyBorder;
+import de.hglabor.plugins.kitapi.pvp.recraft.RecraftInspector;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.ChanceUtils;
 import de.hglabor.utils.noriskutils.ChatUtils;
@@ -30,7 +31,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Collections;
@@ -44,6 +44,7 @@ public class IngamePhase extends GamePhase {
     protected final int participants;
     protected final int feastAppearance;
     protected final SkyBorder skyBorder;
+    protected final RecraftInspector recraftInspector;
     protected Feast feast;
     protected FeastListener feastListener;
     protected Optional<HGPlayer> winner;
@@ -54,6 +55,7 @@ public class IngamePhase extends GamePhase {
         this.feastAppearance = ChanceUtils.getRandomNumber(HGConfig.getInteger(ConfigKeys.FEAST_LATEST_APPEARANCE), HGConfig.getInteger(ConfigKeys.FEAST_EARLIEST_APPEARANCE));
         this.offlinePlayerManager = new OfflinePlayerHandler(this);
         this.deathMessages = new DeathMessages();
+        this.recraftInspector = new RecraftInspector(HGConfig.getInteger(ConfigKeys.MAX_RECRAFT_AMOUNT));
         this.participants = playerList.getAlivePlayers().size();
     }
 
@@ -65,7 +67,8 @@ public class IngamePhase extends GamePhase {
 
     @Override
     protected void tick(int timer) {
-        skyBorder.tick();
+        skyBorder.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
+        if (timer % 5 == 0) recraftInspector.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
         announceEnding(timer);
         if (timer > maxPhaseTime) {
             checkForWinnerWithMostKills();
@@ -97,35 +100,25 @@ public class IngamePhase extends GamePhase {
     }
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-        HGPlayer hgPlayer = playerList.getPlayer(player);
-        Logger.debug(String.format("%s joined with status %s in phase %s", hgPlayer.getName(), hgPlayer.getStatus(), this.getType()));
-        switch (hgPlayer.getStatus()) {
-            case ELIMINATED:
-                if (player.hasPermission("hglabor.spectator")) break;
-                event.setKickMessage(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.getPlayerLocale(player)));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                break;
-            case WAITING:
-                if (player.hasPermission("hglabor.spectator")) {
-                    hgPlayer.setStatus(PlayerStatus.SPECTATOR);
-                } else {
-                    event.setKickMessage(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                }
-                break;
-        }
-    }
-
-    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         HGPlayer hgPlayer = playerList.getPlayer(player);
+        if (hgPlayer.getStatus().equals(PlayerStatus.WAITING)) {
+            if (player.hasPermission("hglabor.spectator")) {
+                hgPlayer.setStatus(PlayerStatus.SPECTATOR);
+            } else {
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
+            }
+        }
         switch (hgPlayer.getStatus()) {
             case OFFLINE:
                 offlinePlayerManager.stopTimer(hgPlayer);
                 hgPlayer.setStatus(PlayerStatus.ALIVE);
+                break;
+            case ELIMINATED:
+                if (player.hasPermission("hglabor.spectator"))
+                    break;
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.getPlayerLocale(player)));
                 break;
             case SPECTATOR:
                 event.setJoinMessage(null);
@@ -241,5 +234,9 @@ public class IngamePhase extends GamePhase {
     @Override
     protected GamePhase getNextPhase() {
         return new EndPhase(winner, participants);
+    }
+
+    public Feast getFeast() {
+        return feast;
     }
 }
