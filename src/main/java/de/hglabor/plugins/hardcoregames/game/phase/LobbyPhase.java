@@ -12,6 +12,7 @@ import de.hglabor.plugins.hardcoregames.game.PhaseType;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
+import de.hglabor.plugins.hardcoregames.queue.HGInformationPublisher;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.hardcoregames.util.RandomTeleport;
@@ -39,6 +40,7 @@ import java.util.Optional;
 
 public class LobbyPhase extends GamePhase {
     protected final ItemStack QUEUE_ITEM, RANDOM_TP;
+    private final String serverName;
     protected int forceStartTime, prepareStartTime, timeLeft, requiredPlayerAmount;
     protected boolean isStarting, isForceStarting;
 
@@ -47,6 +49,7 @@ public class LobbyPhase extends GamePhase {
         this.forceStartTime = HGConfig.getInteger(ConfigKeys.COMMAND_FORCESTART_TIME);
         this.requiredPlayerAmount = HGConfig.getInteger(ConfigKeys.LOBBY_PLAYERS_NEEDED);
         this.prepareStartTime = HGConfig.getInteger(ConfigKeys.LOBBY_PREPARE_START_TIME);
+        this.serverName = HGConfig.getString(ConfigKeys.SERVER_NAME);
         //TODO add desc and maybe localization
         this.QUEUE_ITEM = new ItemBuilder(Material.HEART_OF_THE_SEA).setName(ChatColor.GREEN + "Queue").build();
         this.RANDOM_TP = new ItemBuilder(Material.LODESTONE).setName(ChatColor.AQUA + "Random Teleport").build();
@@ -57,6 +60,8 @@ public class LobbyPhase extends GamePhase {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Optional<World> world = Optional.ofNullable(Bukkit.getWorld("world"));
         world.ifPresent(HGConfig::lobbyWorldSettings);
+        HGInformationPublisher hgInformationPublisher = new HGInformationPublisher(serverName);
+        hgInformationPublisher.runTaskTimerAsynchronously(HardcoreGames.getPlugin(), 0, 20);
     }
 
     @Override
@@ -88,7 +93,7 @@ public class LobbyPhase extends GamePhase {
 
     public void prepareToStart() {
         isStarting = true;
-        JedisUtils.publish(JChannels.HGQUEUE_MOVE, String.valueOf(Bukkit.getPort()));
+        HardcoreGames.async(() -> JedisUtils.publish(JChannels.HGQUEUE_MOVE, serverName));
         for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
             waitingPlayer.getBukkitPlayer().ifPresent(player -> {
                 PotionUtils.paralysePlayer(player);

@@ -10,7 +10,6 @@ import de.hglabor.plugins.hardcoregames.kit.KitSelectorImpl;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.queue.HGQueueChannel;
-import de.hglabor.plugins.hardcoregames.queue.ServerPingListener;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardJoinListener;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
@@ -46,6 +45,10 @@ import java.nio.file.Paths;
 public final class HardcoreGames extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static HardcoreGames plugin;
+
+    public static void async(Runnable runnable) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
+    }
 
     public static HardcoreGames getPlugin() {
         return plugin;
@@ -103,7 +106,6 @@ public final class HardcoreGames extends JavaPlugin {
 
     private void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new ServerPingListener(), this);
         pluginManager.registerEvents(new ScoreboardJoinListener(), this);
         pluginManager.registerEvents(new RemoveHitCooldown(), this);
         pluginManager.registerEvents(new OldKnockback(this), this);

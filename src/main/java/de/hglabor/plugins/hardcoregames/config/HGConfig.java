@@ -27,6 +27,7 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.DEBUG_IS_ENABLED, false);
         plugin.getConfig().addDefault(ConfigKeys.REDIS_PW, "password");
         plugin.getConfig().addDefault(ConfigKeys.SERVER_PING, true);
+        plugin.getConfig().addDefault(ConfigKeys.SERVER_NAME, "hg");
         plugin.getConfig().addDefault(ConfigKeys.SWORD_DAMAGE_NERF, 0.65);
         plugin.getConfig().addDefault(ConfigKeys.OTHER_TOOLS_DAMAGE_NERF, 0.2);
         plugin.getConfig().addDefault(ConfigKeys.TRACKER_DISTANCE, 30D);
