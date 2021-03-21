@@ -9,10 +9,9 @@ import de.hglabor.plugins.hardcoregames.game.mechanics.MooshroomCowNerf;
 import de.hglabor.plugins.hardcoregames.kit.KitSelectorImpl;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
-import de.hglabor.plugins.hardcoregames.queue.HGQueueChannel;
+import de.hglabor.plugins.hardcoregames.queue.QueueChannel;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardJoinListener;
 import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
-import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.kitapi.KitApi;
 import de.hglabor.plugins.kitapi.command.KitSettingsCommand;
 import de.hglabor.plugins.kitapi.kit.events.KitEventHandlerImpl;
@@ -23,8 +22,6 @@ import de.hglabor.plugins.kitapi.pvp.SoupHealing;
 import de.hglabor.plugins.kitapi.pvp.Tracker;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.command.HidePlayersCommand;
-import de.hglabor.utils.noriskutils.jedis.JChannels;
-import de.hglabor.utils.noriskutils.jedis.JedisUtils;
 import de.hglabor.utils.noriskutils.listener.DamageNerf;
 import de.hglabor.utils.noriskutils.listener.DurabilityFix;
 import de.hglabor.utils.noriskutils.listener.OldKnockback;
@@ -34,6 +31,8 @@ import de.hglabor.utils.noriskutils.staffmode.PlayerHider;
 import de.hglabor.utils.noriskutils.staffmode.StaffModeCommand;
 import de.hglabor.utils.noriskutils.staffmode.StaffModeListener;
 import de.hglabor.utils.noriskutils.staffmode.StaffModeManager;
+import de.hglabor.velocity.queue.constants.QChannels;
+import de.hglabor.velocity.queue.jedis.JedisManager;
 import dev.jorel.commandapi.CommandAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -59,7 +58,7 @@ public final class HardcoreGames extends JavaPlugin {
         StaffModeManager.INSTANCE.setPlayerHider(new PlayerHider(PlayerList.INSTANCE, this));
         KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this);
         CommandAPI.onEnable(this);
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, ChannelIdentifier.HG_QUEUE);
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, QChannels.QUEUE_JOIN.get());
         this.registerEvents();
 
         GameStateManager.INSTANCE.run();
@@ -85,12 +84,12 @@ public final class HardcoreGames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        JedisUtils.closePool();
+        JedisManager.closePool();
     }
 
     private void initJedis() {
-        JedisUtils.init(HGConfig.getString(ConfigKeys.REDIS_PW));
-        JedisUtils.subscribe(new HGQueueChannel(), JChannels.HGQUEUE_LEAVE, JChannels.HGQUEUE_JOIN);
+        JedisManager.init(HGConfig.getString(ConfigKeys.REDIS_PW));
+        JedisManager.subscribe(new QueueChannel(HGConfig.getString(ConfigKeys.SERVER_NAME)), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get());
     }
 
     private void registerCommands() {

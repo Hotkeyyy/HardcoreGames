@@ -3,10 +3,9 @@ package de.hglabor.plugins.hardcoregames.player;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.kitapi.player.KitPlayer;
 import de.hglabor.plugins.kitapi.supplier.IPlayerList;
-import de.hglabor.plugins.kitapi.supplier.KitPlayerSupplier;
-import de.hglabor.utils.noriskutils.queue.hg.HGQueuePlayerInfo;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayer;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayerSupplier;
+import de.hglabor.velocity.queue.pojo.QPlayerInfo;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -25,8 +24,8 @@ public final class PlayerList implements IPlayerList, StaffPlayerSupplier {
         return players.get(uuid);
     }
 
-    public HGPlayer getPlayer(HGQueuePlayerInfo hgQueueJoinInfo) {
-        return players.computeIfAbsent(UUID.fromString(hgQueueJoinInfo.getUuid()), id -> new HGPlayer(id, hgQueueJoinInfo.getName()));
+    public HGPlayer getPlayer(QPlayerInfo playerInfo) {
+        return players.computeIfAbsent(UUID.fromString(playerInfo.getUuid()), id -> new HGPlayer(id, playerInfo.getPlayerName()));
     }
 
     public HGPlayer getPlayer(Player player) {

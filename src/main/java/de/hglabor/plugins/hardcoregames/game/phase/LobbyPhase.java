@@ -12,7 +12,7 @@ import de.hglabor.plugins.hardcoregames.game.PhaseType;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
 import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
-import de.hglabor.plugins.hardcoregames.queue.HGInformationPublisher;
+import de.hglabor.plugins.hardcoregames.queue.GameInfoProvider;
 import de.hglabor.plugins.hardcoregames.util.ChannelIdentifier;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.plugins.hardcoregames.util.RandomTeleport;
@@ -21,8 +21,8 @@ import de.hglabor.utils.noriskutils.ChatUtils;
 import de.hglabor.utils.noriskutils.ItemBuilder;
 import de.hglabor.utils.noriskutils.PotionUtils;
 import de.hglabor.utils.noriskutils.TimeConverter;
-import de.hglabor.utils.noriskutils.jedis.JChannels;
-import de.hglabor.utils.noriskutils.jedis.JedisUtils;
+import de.hglabor.velocity.queue.constants.QChannels;
+import de.hglabor.velocity.queue.jedis.JedisManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -60,7 +60,7 @@ public class LobbyPhase extends GamePhase {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Optional<World> world = Optional.ofNullable(Bukkit.getWorld("world"));
         world.ifPresent(HGConfig::lobbyWorldSettings);
-        HGInformationPublisher hgInformationPublisher = new HGInformationPublisher(serverName);
+        GameInfoProvider hgInformationPublisher = new GameInfoProvider(serverName);
         hgInformationPublisher.runTaskTimerAsynchronously(HardcoreGames.getPlugin(), 0, 20);
     }
 
@@ -93,7 +93,7 @@ public class LobbyPhase extends GamePhase {
 
     public void prepareToStart() {
         isStarting = true;
-        HardcoreGames.async(() -> JedisUtils.publish(JChannels.HGQUEUE_MOVE, serverName));
+        JedisManager.publish(QChannels.QUEUE_MOVE.get(), serverName);
         for (HGPlayer waitingPlayer : playerList.getWaitingPlayers()) {
             waitingPlayer.getBukkitPlayer().ifPresent(player -> {
                 PotionUtils.paralysePlayer(player);
@@ -207,7 +207,8 @@ public class LobbyPhase extends GamePhase {
         }
         if (item.isSimilar(QUEUE_ITEM)) {
             HGPlayer hgPlayer = playerList.getPlayer(player);
-            player.sendPluginMessage(HardcoreGames.getPlugin(), ChannelIdentifier.HG_QUEUE, new byte[]{});
+            //TODO QChannels QGameInfo
+            player.sendPluginMessage(HardcoreGames.getPlugin(), QChannels.QUEUE_JOIN.get(), new byte[]{});
             hgPlayer.setStatus(PlayerStatus.QUEUE);
         } else if (item.isSimilar(RANDOM_TP)) {
             RandomTeleport.teleportAsync(player);
@@ -282,6 +283,10 @@ public class LobbyPhase extends GamePhase {
     @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
         event.setCancelled(true);
+    }
+
+    public int getRequiredPlayerAmount() {
+        return requiredPlayerAmount;
     }
 
     public void setRequiredPlayerAmount(int requiredPlayerAmount) {
