@@ -29,7 +29,7 @@ public abstract class GamePhase implements Listener {
         return GameStateManager.INSTANCE.getTimer();
     }
 
-    protected abstract String getTimeString(int timer);
+    public abstract String getTimeString(int timer);
 
     protected void startNextPhase() {
         HandlerList.unregisterAll(this);

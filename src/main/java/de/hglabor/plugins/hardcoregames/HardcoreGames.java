@@ -33,6 +33,7 @@ import de.hglabor.utils.noriskutils.staffmode.StaffModeListener;
 import de.hglabor.utils.noriskutils.staffmode.StaffModeManager;
 import de.hglabor.velocity.queue.constants.QChannels;
 import de.hglabor.velocity.queue.jedis.JedisManager;
+import de.hglabor.velocity.queue.pojo.QGameInfo;
 import dev.jorel.commandapi.CommandAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,6 +45,7 @@ import java.nio.file.Paths;
 public final class HardcoreGames extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static HardcoreGames plugin;
+    public static String serverName;
 
     public static void async(Runnable runnable) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
@@ -78,18 +80,20 @@ public final class HardcoreGames extends JavaPlugin {
     public void onLoad() {
         plugin = this;
         HGConfig.load();
+        serverName = HGConfig.getString(ConfigKeys.SERVER_NAME);
         Localization.INSTANCE.loadLanguageFiles(Paths.get(this.getDataFolder() + "/lang"), "\u00A7");
         CommandAPI.onLoad(true);
     }
 
     @Override
     public void onDisable() {
+        JedisManager.publish(QChannels.QUEUE_INFO.get(),GSON.toJson(new QGameInfo(serverName,"RESTARTING")));
         JedisManager.closePool();
     }
 
     private void initJedis() {
         JedisManager.init(HGConfig.getString(ConfigKeys.REDIS_PW));
-        JedisManager.subscribe(new QueueChannel(HGConfig.getString(ConfigKeys.SERVER_NAME)), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get());
+        JedisManager.subscribe(new QueueChannel(serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get());
     }
 
     private void registerCommands() {

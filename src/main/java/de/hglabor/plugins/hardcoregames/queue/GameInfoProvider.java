@@ -25,7 +25,7 @@ public class GameInfoProvider extends BukkitRunnable {
                 manager.getPhase() instanceof LobbyPhase ? ((LobbyPhase) manager.getPhase()).getRequiredPlayerAmount() : 0,
                 Bukkit.getMaxPlayers(),
                 manager.getPhase().getCurrentParticipants(),
-                manager.getPhase().getRawTime(),
+                manager.getPhase().getTimeString(manager.getTimer()),
                 true
         );
         JedisManager.publish(QChannels.QUEUE_INFO.get(), HardcoreGames.GSON.toJson(gameInfo, QGameInfo.class));

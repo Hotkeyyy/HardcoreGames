@@ -217,7 +217,7 @@ public class IngamePhase extends GamePhase {
     }
 
     @Override
-    protected String getTimeString(int timer) {
+    public String getTimeString(int timer) {
         return TimeConverter.stringify(timer);
     }
 
