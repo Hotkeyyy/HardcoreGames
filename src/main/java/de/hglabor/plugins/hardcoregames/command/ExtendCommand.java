@@ -24,7 +24,7 @@ public class ExtendCommand {
                     int seconds = (int) objects[0];
                     LobbyPhase lobbyPhase = (LobbyPhase) GameStateManager.INSTANCE.getPhase();
                     if (PermissionUtils.checkForHigherRank(player)) {
-                        player.sendMessage(t("hglabor.higherRankIsOnline", ChatUtils.getPlayerLocale(player)));
+                        player.sendMessage(t("hglabor.higherRankIsOnline", ChatUtils.locale(player)));
                         return;
                     }
                     if (lobbyPhase.isStarting()) {

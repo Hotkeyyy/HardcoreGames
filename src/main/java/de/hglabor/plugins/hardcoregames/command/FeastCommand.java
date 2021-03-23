@@ -39,7 +39,7 @@ public class FeastCommand {
                     IngamePhase ingamePhase = (IngamePhase) GameStateManager.INSTANCE.getPhase();
                     Feast feast = ingamePhase.getFeast();
                     if (feast == null) {
-                        player.sendMessage(t("feast.notSpawnedYet", ChatUtils.getPlayerLocale(player)));
+                        player.sendMessage(t("feast.notSpawnedYet", ChatUtils.locale(player)));
                         return;
                     }
                     Location toLocation = player.getWorld().getSpawnLocation().clone().add(0, 5, 0);
@@ -55,7 +55,7 @@ public class FeastCommand {
                     ParticleSpawner particleSpawner = new ParticleSpawner(player, distance, p1, vector);
                     particleSpawner.runTaskTimer(HardcoreGames.getPlugin(), 0, 5);
                     particleSpawners.put(particleSpawner.player.getUniqueId(), particleSpawner);
-                    player.sendMessage(t("feast.pointingTowardsFeast", ChatUtils.getPlayerLocale(player)));
+                    player.sendMessage(t("feast.pointingTowardsFeast", ChatUtils.locale(player)));
                 })
                 .register();
     }

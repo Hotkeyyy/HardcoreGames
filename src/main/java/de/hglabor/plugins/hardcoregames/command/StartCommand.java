@@ -24,7 +24,7 @@ public class StartCommand {
                 .withRequirement((commandSender) -> GameStateManager.INSTANCE.getPhase().getType().equals(PhaseType.LOBBY))
                 .executesPlayer((player, objects) -> {
                     if (PermissionUtils.checkForHigherRank(player)) {
-                        player.sendMessage(t("hglabor.higherRankIsOnline", ChatUtils.getPlayerLocale(player)));
+                        player.sendMessage(t("hglabor.higherRankIsOnline", ChatUtils.locale(player)));
                         return;
                     }
                     LobbyPhase lobbyPhase = (LobbyPhase) GameStateManager.INSTANCE.getPhase();
@@ -32,7 +32,7 @@ public class StartCommand {
                     lobbyPhase.setForceStarted(true);
                     lobbyPhase.setRequiredPlayerAmount(1);
                     GameStateManager.INSTANCE.setTimer((lobbyPhase.getMaxPhaseTime() - HGConfig.getInteger(ConfigKeys.COMMAND_FORCESTART_TIME)));
-                    player.sendMessage(Localization.INSTANCE.getMessage("permissions.roundHasBeenStarted", ChatUtils.getPlayerLocale(player)));
+                    player.sendMessage(Localization.INSTANCE.getMessage("permissions.roundHasBeenStarted", ChatUtils.locale(player)));
                     Logger.debug(String.format("%s has forcestarted", player.getName()));
                 })
                 .register();

@@ -21,7 +21,7 @@ public final class RandomTeleport {
 
     public static void teleportAsync(Player player) {
         if (cooldown.getOrDefault(player.getUniqueId(), System.currentTimeMillis()) > System.currentTimeMillis()) {
-            player.sendMessage(t("randomteleport.spamProt", ChatUtils.getPlayerLocale(player)));
+            player.sendMessage(t("randomteleport.spamProt", ChatUtils.locale(player)));
         } else {
             int borderSize = HGConfig.getInteger(ConfigKeys.WORLD_BORDER_SIZE);
             player.teleportAsync(TeleportUtils.getHighestRandomLocation(player.getWorld(), borderSize, -borderSize, HeightMap.MOTION_BLOCKING_NO_LEAVES));

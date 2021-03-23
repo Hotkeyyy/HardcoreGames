@@ -61,7 +61,7 @@ public class KitSelectorImpl extends KitSelector {
                 PlayerList.INSTANCE.getPlayer(player).setKit(kit, index);
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
                 player.sendMessage(Localization.INSTANCE.getMessage("kitSelection.pickMessage",
-                        ImmutableMap.of("kit", kit.getName()), ChatUtils.getPlayerLocale(player)));
+                        ImmutableMap.of("kit", kit.getName()), ChatUtils.locale(player)));
                 player.closeInventory();
             }
         }

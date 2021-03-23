@@ -99,7 +99,7 @@ public class HGPlayer extends KitPlayerImpl implements ScoreboardPlayer, StaffPl
 
     @Override
     public Locale getLocale() {
-        return ChatUtils.getPlayerLocale(uuid);
+        return ChatUtils.locale(uuid);
     }
 
     @Override

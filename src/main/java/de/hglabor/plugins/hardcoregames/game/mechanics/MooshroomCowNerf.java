@@ -54,7 +54,7 @@ public class MooshroomCowNerf implements Listener {
             if ((MAX_SOUPS_FROM_COW - milkedSoups) % 10 == 0 || milkedSoups < 5) {
                 player.sendMessage(Localization.INSTANCE.getMessage("mushroomcownerf.timesLeftToMilk",
                         ImmutableMap.of("soupsLeft", String.valueOf(MAX_SOUPS_FROM_COW - milkedSoups)),
-                        ChatUtils.getPlayerLocale(player)));
+                        ChatUtils.locale(player)));
             }
 
             if (milkedSoups >= MAX_SOUPS_FROM_COW) {

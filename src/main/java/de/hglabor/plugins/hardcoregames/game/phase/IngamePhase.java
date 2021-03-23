@@ -107,7 +107,7 @@ public class IngamePhase extends GamePhase {
             if (player.hasPermission("hglabor.spectator")) {
                 hgPlayer.setStatus(PlayerStatus.SPECTATOR);
             } else {
-                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.locale(player)));
             }
         }
         switch (hgPlayer.getStatus()) {
@@ -118,12 +118,12 @@ public class IngamePhase extends GamePhase {
             case ELIMINATED:
                 if (player.hasPermission("hglabor.spectator"))
                     break;
-                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.getPlayerLocale(player)));
+                player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.locale(player)));
                 break;
             case SPECTATOR:
                 event.setJoinMessage(null);
                 player.setGameMode(GameMode.SPECTATOR);
-                player.sendMessage(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.getPlayerLocale(player)));
+                player.sendMessage(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.locale(player)));
                 break;
         }
         Logger.debug(String.format("%s joined with status %s in phase %s", hgPlayer.getName(), hgPlayer.getStatus(), this.getType()));
