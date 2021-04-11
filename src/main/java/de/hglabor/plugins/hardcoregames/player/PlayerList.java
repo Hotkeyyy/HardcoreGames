@@ -46,6 +46,11 @@ public final class PlayerList implements IPlayerList, StaffPlayerSupplier {
         return getPlayer(player);
     }
 
+    @Override
+    public KitPlayer getRandomAlivePlayer() {
+        return getAlivePlayers().stream().findAny().get();
+    }
+
     public List<HGPlayer> getPlayers() {
         return new ArrayList<>(players.values());
     }
