@@ -81,7 +81,7 @@ public final class HardcoreGames extends JavaPlugin {
         plugin = this;
         HGConfig.load();
         serverName = HGConfig.getString(ConfigKeys.SERVER_NAME);
-        Localization.INSTANCE.loadLanguageFiles(Paths.get(this.getDataFolder() + "/lang"), "\u00A7");
+        loadLocalizationFiles();
         CommandAPI.onLoad(true);
     }
 
@@ -122,5 +122,17 @@ public final class HardcoreGames extends JavaPlugin {
         pluginManager.registerEvents(new Tracker(HGConfig.getDouble(ConfigKeys.TRACKER_DISTANCE), PlayerList.INSTANCE), this);
         pluginManager.registerEvents(new SoupHealing(), this);
         pluginManager.registerEvents(new MooshroomCowNerf(), this);
+    }
+
+    private void loadLocalizationFiles() {
+        try {
+            //U+00A7 = §
+            String base = "/home/mcserver/shared_server_data/localization/";
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"HG"), "\u00A7");
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"KitApi"), "\u00A7");
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"Staff"), "\u00A7");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
