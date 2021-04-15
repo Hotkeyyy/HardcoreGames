@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import static de.hglabor.utils.localization.Localization.t;
+
 public class KitSelectorImpl extends KitSelector {
     public KitSelectorImpl() {
         super(ChatColor.GOLD.toString() + ChatColor.BOLD + "Kit Selector");
@@ -60,8 +62,8 @@ public class KitSelectorImpl extends KitSelector {
 
                 PlayerList.INSTANCE.getPlayer(player).setKit(kit, index);
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
-                player.sendMessage(Localization.INSTANCE.getMessage("kitSelection.pickMessage",
-                        ImmutableMap.of("kit", kit.getName()), ChatUtils.locale(player)));
+                player.sendMessage(t("kitSelection.pickMessage",
+                        ImmutableMap.of("kitName", kit.getName()), ChatUtils.locale(player)));
                 player.closeInventory();
             }
         }
