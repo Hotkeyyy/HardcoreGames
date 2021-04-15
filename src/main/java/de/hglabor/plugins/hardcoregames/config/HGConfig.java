@@ -28,6 +28,7 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.REDIS_PW, "password");
         plugin.getConfig().addDefault(ConfigKeys.SERVER_PING, true);
         plugin.getConfig().addDefault(ConfigKeys.SERVER_NAME, "hg");
+        plugin.getConfig().addDefault(ConfigKeys.SERVER_EVENT, false);
         plugin.getConfig().addDefault(ConfigKeys.SWORD_DAMAGE_NERF, 0.65);
         plugin.getConfig().addDefault(ConfigKeys.OTHER_TOOLS_DAMAGE_NERF, 0.2);
         plugin.getConfig().addDefault(ConfigKeys.TRACKER_DISTANCE, 30D);
@@ -44,7 +45,7 @@ public class HGConfig {
         world.setTime(6000);
         world.setStorm(false);
         world.setThundering(false);
-        world.getWorldBorder().setSize(getInteger(ConfigKeys.WORLD_BORDER_SIZE)*2);
+        world.getWorldBorder().setSize(getInteger(ConfigKeys.WORLD_BORDER_SIZE) * 2);
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
@@ -80,5 +81,9 @@ public class HGConfig {
 
     public static boolean getBoolean(String key) {
         return HardcoreGames.getPlugin().getConfig().getBoolean(key);
+    }
+
+    public static boolean isEvent() {
+        return HardcoreGames.getPlugin().getConfig().getBoolean(ConfigKeys.SERVER_EVENT);
     }
 }

@@ -44,12 +44,9 @@ import java.nio.file.Paths;
 
 public final class HardcoreGames extends JavaPlugin {
     public static final Gson GSON = new Gson();
+    private final static String SHARED_SERVER_DATA = "/home/mcserver/shared_server_data/";
     public static HardcoreGames plugin;
     public static String serverName;
-
-    public static void async(Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
 
     public static HardcoreGames getPlugin() {
         return plugin;
@@ -58,7 +55,11 @@ public final class HardcoreGames extends JavaPlugin {
     @Override
     public void onEnable() {
         StaffModeManager.INSTANCE.setPlayerHider(new PlayerHider(PlayerList.INSTANCE, this));
-        KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this);
+        if (HGConfig.isEvent()) {
+            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames","event"));
+        } else {
+            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames"));
+        }
         CommandAPI.onEnable(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, QChannels.QUEUE_JOIN.get());
         this.registerEvents();
@@ -87,13 +88,17 @@ public final class HardcoreGames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        JedisManager.publish(QChannels.QUEUE_INFO.get(),GSON.toJson(new QGameInfo(serverName,"RESTARTING")));
-        JedisManager.closePool();
+        if (HGConfig.getBoolean(ConfigKeys.SERVER_PING)) {
+            JedisManager.publish(QChannels.QUEUE_INFO.get(), GSON.toJson(new QGameInfo(serverName, "RESTARTING")));
+            JedisManager.closePool();
+        }
     }
 
     private void initJedis() {
-        JedisManager.init(HGConfig.getString(ConfigKeys.REDIS_PW));
-        JedisManager.subscribe(new QueueChannel(serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get());
+        if (HGConfig.getBoolean(ConfigKeys.SERVER_PING)) {
+            JedisManager.init(HGConfig.getString(ConfigKeys.REDIS_PW));
+            JedisManager.subscribe(new QueueChannel(serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get());
+        }
     }
 
     private void registerCommands() {
@@ -127,10 +132,9 @@ public final class HardcoreGames extends JavaPlugin {
     private void loadLocalizationFiles() {
         try {
             //U+00A7 = §
-            String base = "/home/mcserver/shared_server_data/localization/";
-            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"HG"), "\u00A7");
-            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"KitApi"), "\u00A7");
-            Localization.INSTANCE.loadLanguageFiles(Paths.get(base,"Staff"), "\u00A7");
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(SHARED_SERVER_DATA, "localization", "HG"), "\u00A7");
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(SHARED_SERVER_DATA, "localization", "KitApi"), "\u00A7");
+            Localization.INSTANCE.loadLanguageFiles(Paths.get(SHARED_SERVER_DATA, "localization", "Staff"), "\u00A7");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -40,6 +40,7 @@ public interface ConfigKeys {
     String SERVER = "server";
     String SERVER_PING = SERVER + "." + "ping";
     String SERVER_NAME = SERVER + "." + "name";
+    String SERVER_EVENT = SERVER + "." + "isEvent";
 
     String MECHANICS = "mechanics";
     String SWORD_DAMAGE_NERF = MECHANICS + "." + "sworddamagemultiplier";
