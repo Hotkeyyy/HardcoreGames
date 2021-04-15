@@ -2,7 +2,6 @@ package de.hglabor.plugins.hardcoregames.scoreboard;
 
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
-import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
 import de.hglabor.utils.noriskutils.scoreboard.ScoreboardFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

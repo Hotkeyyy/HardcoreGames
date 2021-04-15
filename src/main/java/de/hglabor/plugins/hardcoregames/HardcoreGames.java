@@ -15,7 +15,7 @@ import de.hglabor.plugins.hardcoregames.scoreboard.ScoreboardManager;
 import de.hglabor.plugins.kitapi.KitApi;
 import de.hglabor.plugins.kitapi.command.KitSettingsCommand;
 import de.hglabor.plugins.kitapi.kit.events.KitEventHandlerImpl;
-import de.hglabor.plugins.kitapi.kit.events.KitItemHandler;
+import de.hglabor.plugins.kitapi.kit.items.KitItemHandler;
 import de.hglabor.plugins.kitapi.listener.LastHitDetection;
 import de.hglabor.plugins.kitapi.pvp.CPSChecker;
 import de.hglabor.plugins.kitapi.pvp.SoupHealing;

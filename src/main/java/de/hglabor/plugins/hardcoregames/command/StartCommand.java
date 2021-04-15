@@ -10,8 +10,6 @@ import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.ChatUtils;
 import de.hglabor.utils.noriskutils.PermissionUtils;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.IntegerArgument;
-import org.bukkit.ChatColor;
 
 import static de.hglabor.utils.localization.Localization.t;
 

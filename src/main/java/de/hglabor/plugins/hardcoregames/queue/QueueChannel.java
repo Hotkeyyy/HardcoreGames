@@ -9,7 +9,6 @@ import de.hglabor.plugins.hardcoregames.player.PlayerStatus;
 import de.hglabor.plugins.hardcoregames.util.Logger;
 import de.hglabor.velocity.queue.constants.QChannels;
 import de.hglabor.velocity.queue.pojo.QPlayerInfo;
-import org.bukkit.Bukkit;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.UUID;
