@@ -29,6 +29,7 @@ public interface ConfigKeys {
 
     String BORDER = "border";
     String SKY_BORDER = "skyborder";
+    String SKY_BORDER_HEIGHT = "skyborder" + "." + "maxBuildHeight";
     String SKY_BORDER_DAMAGE = BORDER + "." + SKY_BORDER + "." + "damage";
 
     String DEBUG = "debug";

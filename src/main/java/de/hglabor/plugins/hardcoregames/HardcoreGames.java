@@ -56,7 +56,7 @@ public final class HardcoreGames extends JavaPlugin {
     public void onEnable() {
         StaffModeManager.INSTANCE.setPlayerHider(new PlayerHider(PlayerList.INSTANCE, this));
         if (HGConfig.isEvent()) {
-            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames","event"));
+            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames", "event"));
         } else {
             KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames"));
         }
@@ -64,6 +64,7 @@ public final class HardcoreGames extends JavaPlugin {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, QChannels.QUEUE_JOIN.get());
         this.registerEvents();
 
+        GameStateManager.INSTANCE.init();
         GameStateManager.INSTANCE.run();
 
         for (Player player : Bukkit.getOnlinePlayers()) {

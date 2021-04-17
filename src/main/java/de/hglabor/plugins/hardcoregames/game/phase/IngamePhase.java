@@ -43,7 +43,6 @@ public class IngamePhase extends GamePhase {
     protected final DeathMessages deathMessages;
     protected final int participants;
     protected final int feastAppearance;
-    protected final SkyBorder skyBorder;
     protected final RecraftInspector recraftInspector;
     protected Feast feast;
     protected FeastListener feastListener;
@@ -51,7 +50,6 @@ public class IngamePhase extends GamePhase {
 
     public IngamePhase() {
         super(HGConfig.getInteger(ConfigKeys.INGAME_MAX_PLAYTIME));
-        this.skyBorder = new SkyBorder(HGConfig.getInteger(ConfigKeys.SKY_BORDER_DAMAGE));
         this.feastAppearance = ChanceUtils.getRandomNumber(HGConfig.getInteger(ConfigKeys.FEAST_LATEST_APPEARANCE), HGConfig.getInteger(ConfigKeys.FEAST_EARLIEST_APPEARANCE));
         this.offlinePlayerManager = new OfflinePlayerHandler(this);
         this.deathMessages = new DeathMessages();
@@ -67,7 +65,6 @@ public class IngamePhase extends GamePhase {
 
     @Override
     protected void tick(int timer) {
-        skyBorder.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
         if (timer % 5 == 0) recraftInspector.tick(PlayerList.INSTANCE.getOnlineEntityPlayers());
         announceEnding(timer);
         if (timer > maxPhaseTime) {
