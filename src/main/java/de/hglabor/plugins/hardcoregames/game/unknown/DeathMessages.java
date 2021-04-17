@@ -21,10 +21,17 @@ public class DeathMessages {
         }
         HGPlayer hgPlayer = PlayerList.INSTANCE.getPlayer(player);
         LastHitInformation lastHitInformation = hgPlayer.getLastHitInformation();
-        Logger.debug(String.format("%s lastdamagetimestamp: %s",player.getName(),lastHitInformation.getLastDamagerTimestamp()));
+        Logger.debug(String.format("%s lastdamagetimestamp: %s", player.getName(), lastHitInformation.getLastDamagerTimestamp()));
         if (lastHitInformation.getLastDamager().isPresent() && lastHitInformation.getLastDamagerTimestamp() + 10 * 1000L > System.currentTimeMillis()) {
             Player killer = lastHitInformation.getLastDamager().get();
             HGPlayer hgKiller = PlayerList.INSTANCE.getPlayer(killer);
+            printDeathMessage(player.getLastDamageCause().getCause(), "byPlayer", ImmutableMap.of(
+                    "playerName", hgPlayer.getName(),
+                    "playerKit", hgPlayer.printKits(),
+                    "killerName", hgKiller.getName(),
+                    "killerKit", hgKiller.printKits()));
+        } else if (player.getKiller() != null) {
+            HGPlayer hgKiller = PlayerList.INSTANCE.getPlayer(player.getKiller());
             printDeathMessage(player.getLastDamageCause().getCause(), "byPlayer", ImmutableMap.of(
                     "playerName", hgPlayer.getName(),
                     "playerKit", hgPlayer.printKits(),
