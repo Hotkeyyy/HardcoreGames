@@ -42,6 +42,12 @@ public interface ConfigKeys {
     String SERVER_PING = SERVER + "." + "ping";
     String SERVER_NAME = SERVER + "." + "name";
     String SERVER_EVENT = SERVER + "." + "isEvent";
+    String SERVER_KIT_CONFIG_PATH = SERVER + "." + "kitConfigPath";
+    String SERVER_FOLDER_PATH = SERVER + "." + "serverFolderPath";
+    String SERVER_SHARED_SERVER_DATA = SERVER + "." + "sharedServerDataPath";
+
+    String QUEUE = "queue";
+    String QUEUE_INFO = QUEUE + "info";
 
     String MECHANICS = "mechanics";
     String SWORD_DAMAGE_NERF = MECHANICS + "." + "sworddamagemultiplier";

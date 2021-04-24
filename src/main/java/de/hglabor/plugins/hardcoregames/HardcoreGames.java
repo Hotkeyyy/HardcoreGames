@@ -6,6 +6,7 @@ import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
 import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GameStateManager;
 import de.hglabor.plugins.hardcoregames.game.mechanics.MooshroomCowNerf;
+import de.hglabor.plugins.hardcoregames.game.unknown.PlayerChangeWorldListener;
 import de.hglabor.plugins.hardcoregames.kit.KitSelectorImpl;
 import de.hglabor.plugins.hardcoregames.player.HGPlayer;
 import de.hglabor.plugins.hardcoregames.player.PlayerList;
@@ -21,6 +22,7 @@ import de.hglabor.plugins.kitapi.pvp.CPSChecker;
 import de.hglabor.plugins.kitapi.pvp.SoupHealing;
 import de.hglabor.plugins.kitapi.pvp.Tracker;
 import de.hglabor.utils.localization.Localization;
+import de.hglabor.utils.noriskutils.DataPackUtils;
 import de.hglabor.utils.noriskutils.command.HidePlayersCommand;
 import de.hglabor.utils.noriskutils.listener.DamageNerf;
 import de.hglabor.utils.noriskutils.listener.DurabilityFix;
@@ -44,9 +46,9 @@ import java.nio.file.Paths;
 
 public final class HardcoreGames extends JavaPlugin {
     public static final Gson GSON = new Gson();
-    private final static String SHARED_SERVER_DATA = "/home/mcserver/shared_server_data/";
     public static HardcoreGames plugin;
     public static String serverName;
+    private static String SHARED_SERVER_DATA;
 
     public static HardcoreGames getPlugin() {
         return plugin;
@@ -54,12 +56,10 @@ public final class HardcoreGames extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        DataPackUtils.generateNewWorld(HGConfig.getString(ConfigKeys.SERVER_FOLDER_PATH) + serverName, "hg");
+
         StaffModeManager.INSTANCE.setPlayerHider(new PlayerHider(PlayerList.INSTANCE, this));
-        if (HGConfig.isEvent()) {
-            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames", "event"));
-        } else {
-            KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get(SHARED_SERVER_DATA, "configs", "hardcoregames"));
-        }
+        KitApi.getInstance().register(PlayerList.INSTANCE, new KitSelectorImpl(), this, Paths.get("/home/", getConfig().getString(ConfigKeys.SERVER_KIT_CONFIG_PATH)));
         CommandAPI.onEnable(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, QChannels.QUEUE_JOIN.get());
         this.registerEvents();
@@ -82,6 +82,7 @@ public final class HardcoreGames extends JavaPlugin {
     public void onLoad() {
         plugin = this;
         HGConfig.load();
+        SHARED_SERVER_DATA = HGConfig.getString(ConfigKeys.SERVER_SHARED_SERVER_DATA);
         serverName = HGConfig.getString(ConfigKeys.SERVER_NAME);
         loadLocalizationFiles();
         CommandAPI.onLoad(true);
@@ -128,6 +129,7 @@ public final class HardcoreGames extends JavaPlugin {
         pluginManager.registerEvents(new Tracker(HGConfig.getDouble(ConfigKeys.TRACKER_DISTANCE), PlayerList.INSTANCE), this);
         pluginManager.registerEvents(new SoupHealing(), this);
         pluginManager.registerEvents(new MooshroomCowNerf(), this);
+        pluginManager.registerEvents(new PlayerChangeWorldListener(), this);
     }
 
     private void loadLocalizationFiles() {

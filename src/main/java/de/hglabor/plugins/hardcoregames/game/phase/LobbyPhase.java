@@ -211,8 +211,8 @@ public class LobbyPhase extends GamePhase {
         if (item.isSimilar(QUEUE_ITEM)) {
             HGPlayer hgPlayer = playerList.getPlayer(player);
             QGameInfo gameInfo = new QGameInfo(serverName, true);
-            player.sendPluginMessage(HardcoreGames.getPlugin(), QChannels.QUEUE_JOIN.get(), HardcoreGames.GSON.toJson(gameInfo, QGameInfo.class).getBytes());
             hgPlayer.setStatus(PlayerStatus.QUEUE);
+            player.sendPluginMessage(HardcoreGames.getPlugin(), QChannels.QUEUE_JOIN.get(), HardcoreGames.GSON.toJson(gameInfo, QGameInfo.class).getBytes());
         } else if (item.isSimilar(RANDOM_TP)) {
             RandomTeleport.teleportAsync(player);
         }

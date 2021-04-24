@@ -5,6 +5,9 @@ import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class HGConfig {
     private HGConfig() {
     }
@@ -25,6 +28,9 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.FEAST_TIME_TILL_SPAWN, 300);
         plugin.getConfig().addDefault(ConfigKeys.SKY_BORDER_DAMAGE, 6);
         plugin.getConfig().addDefault(ConfigKeys.SKY_BORDER_HEIGHT, 128);
+        plugin.getConfig().addDefault(ConfigKeys.SERVER_KIT_CONFIG_PATH, "/mcserver/shared_server_data/configs/hardcoregames/");
+        plugin.getConfig().addDefault(ConfigKeys.SERVER_FOLDER_PATH, "/home/mcserver/hardcoregames/");
+        plugin.getConfig().addDefault(ConfigKeys.SERVER_SHARED_SERVER_DATA, "/home/mcserver/shared_server_data/");
         plugin.getConfig().addDefault(ConfigKeys.DEBUG_IS_ENABLED, false);
         plugin.getConfig().addDefault(ConfigKeys.REDIS_PW, "password");
         plugin.getConfig().addDefault(ConfigKeys.SERVER_PING, true);
@@ -37,6 +43,7 @@ public class HGConfig {
         plugin.getConfig().addDefault(ConfigKeys.MOOSHROOM_COW_NERF_COMBAT_MULTIPLIER, 2);
         plugin.getConfig().addDefault(ConfigKeys.MAX_RECRAFT_AMOUNT, 64);
         plugin.getConfig().addDefault(ConfigKeys.WORLD_BORDER_SIZE, 500);
+        plugin.getConfig().addDefault(ConfigKeys.QUEUE_INFO, Arrays.asList("§cHG with Soups","§cCool"));
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -70,6 +77,10 @@ public class HGConfig {
 
     public static int getInteger(String key) {
         return HardcoreGames.getPlugin().getConfig().getInt(key);
+    }
+
+    public static List<?> getList(String key) {
+        return HardcoreGames.getPlugin().getConfig().getList(key);
     }
 
     public static String getString(String key) {

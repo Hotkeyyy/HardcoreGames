@@ -1,6 +1,8 @@
 package de.hglabor.plugins.hardcoregames.queue;
 
 import de.hglabor.plugins.hardcoregames.HardcoreGames;
+import de.hglabor.plugins.hardcoregames.config.ConfigKeys;
+import de.hglabor.plugins.hardcoregames.config.HGConfig;
 import de.hglabor.plugins.hardcoregames.game.GameStateManager;
 import de.hglabor.plugins.hardcoregames.game.phase.LobbyPhase;
 import de.hglabor.velocity.queue.constants.QChannels;
@@ -9,6 +11,8 @@ import de.hglabor.velocity.queue.pojo.QGameInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
+
 public class GameInfoProvider extends BukkitRunnable {
     private final String serverName;
 
@@ -16,6 +20,7 @@ public class GameInfoProvider extends BukkitRunnable {
         this.serverName = serverName;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         GameStateManager manager = GameStateManager.INSTANCE;
@@ -28,6 +33,8 @@ public class GameInfoProvider extends BukkitRunnable {
                 manager.getPhase().getTimeString(manager.getTimer()),
                 true
         );
+        List<String> list = (List<String>) HGConfig.getList(ConfigKeys.QUEUE_INFO);
+        gameInfo.setAdditionalInfo(list);
         JedisManager.publish(QChannels.QUEUE_INFO.get(), HardcoreGames.GSON.toJson(gameInfo, QGameInfo.class));
     }
 }
