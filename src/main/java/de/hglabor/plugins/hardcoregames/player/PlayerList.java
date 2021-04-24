@@ -6,6 +6,7 @@ import de.hglabor.plugins.kitapi.supplier.IPlayerList;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayer;
 import de.hglabor.utils.noriskutils.staffmode.StaffPlayerSupplier;
 import de.hglabor.velocity.queue.pojo.QPlayerInfo;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -85,7 +86,10 @@ public final class PlayerList implements IPlayerList, StaffPlayerSupplier {
     @Override
     public List<Entity> getTrackingTargets() {
         List<Entity> entites = new ArrayList<>();
-        getOnlinePlayers().forEach(player -> player.getBukkitPlayer().ifPresent(entites::add));
+        getOnlinePlayers().stream()
+                .filter(hgPlayer -> hgPlayer.getBukkitPlayer().isPresent())
+                .filter(hgPlayer -> hgPlayer.getBukkitPlayer().get().getWorld().equals(Bukkit.getWorld("world")))
+                .forEach(hgPlayer -> entites.add(hgPlayer.getBukkitPlayer().get()));
         return entites;
     }
 
