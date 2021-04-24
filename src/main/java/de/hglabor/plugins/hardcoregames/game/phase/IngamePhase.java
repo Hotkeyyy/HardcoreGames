@@ -104,6 +104,7 @@ public class IngamePhase extends GamePhase {
             if (player.hasPermission("hglabor.spectator")) {
                 hgPlayer.setStatus(PlayerStatus.SPECTATOR);
             } else {
+                event.setJoinMessage(null);
                 player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.roundHasStarted", ChatUtils.locale(player)));
             }
         }
@@ -115,6 +116,7 @@ public class IngamePhase extends GamePhase {
             case ELIMINATED:
                 if (player.hasPermission("hglabor.spectator"))
                     break;
+                event.setJoinMessage(null);
                 player.kickPlayer(Localization.INSTANCE.getMessage("ingamePhase.eliminated", ChatUtils.locale(player)));
                 break;
             case SPECTATOR:
